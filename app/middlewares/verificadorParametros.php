@@ -49,8 +49,8 @@ class VerificadorParametros
                        is_numeric($producto->tiempo_preparacion) && $producto->tiempo_preparacion > 0)
                     {
                         $dataToken = Jwtoken::Verificar($token);
-
-                        if($dataToken->id != "socio")
+                       
+                        if($dataToken->puesto != "socio")
                         {
                             $response->getBody()->write(json_encode(array("Acceso denegado" => "el id no pertenece a un usuario con el puesto socio")));
                         }

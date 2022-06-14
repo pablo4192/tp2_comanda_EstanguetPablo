@@ -31,7 +31,7 @@ class ProductoController
         
         $dataToken = Jwtoken::Verificar($token);
         
-        if(Usuario::InsertarProducto($productoAInsertar, $token->id))
+        if(Usuario::InsertarProducto($productoAInsertar, $dataToken->id))
         {
             $payload = json_encode(array("mensaje:" => "Producto insertado en la base de datos"));
             $response = $response->withStatus(200);
