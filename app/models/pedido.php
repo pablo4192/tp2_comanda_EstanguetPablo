@@ -160,10 +160,22 @@ class Pedido
 
     }
 
+    public static function ListarProductosPendientesPreparacion($puesto)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); 
+        $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos_pedidos WHERE puesto_preparacion = :puesto AND estado = 'pendiente'");
+
+        $consulta->bindValue(":puesto", $puesto, PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     private static function Relacionar($producto, $puesto_preparacion, $id_pedido)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
-        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO productos_pedidos (id_pedido,id_producto,puesto_preparacion) VALUES (:id_pedido,:id_producto,:puesto_preparacion)");
+        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO productos_pedidos (id_pedido,id_producto,puesto_preparacion,estado) VALUES (:id_pedido,:id_producto,:puesto_preparacion,'pendiente')");
 
         $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
         $consulta->bindValue(":id_producto", $producto->id, PDO::PARAM_INT);

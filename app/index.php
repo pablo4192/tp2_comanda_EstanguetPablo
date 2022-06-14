@@ -90,9 +90,9 @@ $app->group('/pedidos/modificacion', function (RouteCollectorProxy $group){
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
 //Cambios de estado de los pedidos / productos_pedidos / mesas
-$app->group('/pedidos/pendientes', function (RouteCollectorProxy $group){
+$app->group('/productos_pedidos/pendientes', function (RouteCollectorProxy $group){
+    $group->get('[/]', \PedidoController::class . ':ListarProductos_PedidosPendientes'); //Me retorna los productos pendientes de preparacion segun puesto
     
-    //$group->put('[/pedido]',  \PedidoController::class . ':ModificarPedido')->add(\VerificadorParametros::class . ':VerificarParametrosModificacionPedido');
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
 

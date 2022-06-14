@@ -120,6 +120,35 @@ class PedidoController
 
         return $response;
     }
+
+    public function ListarProductos_PedidosPendientes($request, $response, $args)
+    {
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
+        $listaPendientes = Pedido::ListarProductosPendientesPreparacion($dataToken->puesto);
+
+        $payload = json_encode(array("listaProductos_PendientesPreparacion" => $listaPendientes));
+
+        $response->getBody()->write($payload);
+
+        $response = $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+
+        return $response;
+        
+
+
+    }
 }
 
 ?>

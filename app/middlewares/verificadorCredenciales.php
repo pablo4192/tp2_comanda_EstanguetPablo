@@ -94,8 +94,8 @@ class VerificadorCredenciales
                         $retorno = false;
                     }
                     break;
-                    default:
-                        if($ruta == "/productos_pedidos") //Si estoy logueado como cocinero solo voy a poder ver y cambiar estados de comidas
+                    case "cocinero":
+                        if($ruta == "/productos_pedidos/pendientes")
                         {
                             $retorno = true;
                         }
@@ -104,6 +104,16 @@ class VerificadorCredenciales
                             $retorno = false;
                         }
                         break;
+                        case "cervecero":
+                            if($ruta == "/productos_pedidos/pendientes")
+                            {
+                                $retorno = true;
+                            }
+                            else
+                            {
+                                $retorno = false;
+                            }
+                            break;
         }
         return $retorno;
 
