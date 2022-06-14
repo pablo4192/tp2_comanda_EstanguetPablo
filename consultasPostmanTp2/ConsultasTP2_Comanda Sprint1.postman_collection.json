@@ -1,0 +1,227 @@
+{
+	"info": {
+		"_postman_id": "c2621548-b8a2-4a03-ba92-9ec57b67754e",
+		"name": "Consultas TP2_Comanda Sprint1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20377806"
+	},
+	"item": [
+		{
+			"name": "localhost:666/pedidos",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "pedido",
+							"value": "{\"nombre_cliente\":\"juan\",\"id_mesa\":2,\"productos\":[{\"nombre\":\"milanesa\",\"cantidad\":1},{\"nombre\":\"fideos\",\"cantidad\":2}]}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:666/pedidos",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"pedidos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/pedidos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:666/pedidos",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"pedidos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/mesas",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "mesa",
+							"value": "{\"id\":4}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:666/mesas",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"mesas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/mesas",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:666/mesas",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"mesas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/usuarios",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "usuario",
+							"value": "{\"nombre\":\"carmen\",\"apellido\":\"caruzo\",\"clave\":1234,\"puesto\":\"bartender\"}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:666/usuarios",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/usuarios",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:666/usuarios",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/productos",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "producto",
+							"value": "{\"nombre\":\"empanada\",\"precio\":120,\"stock\":35,\"tiempo_preparacion\":8}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:666/productos",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"productos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/productos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:666/productos",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"productos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/pedidos_Imagen",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "pedido",
+							"value": "{\"nombre_cliente\":\"juan\",\"id_mesa\":6,\"productos\":[{\"nombre\":\"milanesa\",\"cantidad\":1},{\"nombre\":\"fideos\",\"cantidad\":2}]}",
+							"type": "text"
+						},
+						{
+							"key": "imagen",
+							"type": "file",
+							"src": "w6xkaD1X4/ardilla.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:666/pedidos",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"pedidos"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
