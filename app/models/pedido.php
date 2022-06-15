@@ -268,6 +268,32 @@ class Pedido
         }
         return false;
     }
+
+    public static function CambiarEstadoProducto_pedido($producto_pedido, $dataUsuario)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); 
+        $consulta = $accesoADatos->PrepararConsulta("UPDATE productos_pedidos SET estado = :estado, id_encargado_preparacion = :id_encargado_preparacion WHERE id_pedido = :id_pedido AND puesto_preparacion = :puesto");
+
+        $consulta->bindValue(":estado", $producto_pedido->estado, PDO::PARAM_STR);
+        $consulta->bindValue(":id_pedido", $producto_pedido->id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":id_encargado_preparacion", $dataUsuario->id, PDO::PARAM_INT);
+        $consulta->bindValue(":puesto", $dataUsuario->puesto, PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        $filasAfectadas = $consulta->rowCount();
+
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;
+       
+    }
+
+
+
+
 }
 
 ?>

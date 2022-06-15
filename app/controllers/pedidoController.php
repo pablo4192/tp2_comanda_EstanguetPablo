@@ -149,6 +149,48 @@ class PedidoController
 
 
     }
+
+    public function CambiarEstadoProducto_pedido($request, $response, $args)
+    {
+        $data = $request->getParsedBody();
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
+        if(array_key_exists("en_preparacion", $data))
+        {
+            $producto_pedido = json_decode($data['en_preparacion']);
+        }
+        else if(array_key_exists("listo", $data))
+        {
+            $producto_pedido = json_decode($data['listo']);
+        }
+
+        if(Pedido::CambiarEstadoProducto_pedido($producto_pedido, $dataToken))
+        {
+            $payload = json_encode(array("Mensaje" => "El producto relacionado con el pedido " . $producto_pedido->id_pedido . " a sido modificado en la base de datos"));
+            $response = $response->withStatus(200);
+        }
+        else
+        {
+            $payload = json_encode(array("Error" => "El estado del producto relacionado con el pedido " . $producto_pedido->id_pedido  . " NO a sido modificado en la base de datos"));
+            $response = $response->withStatus(400); 
+        }
+        $response->getBody()->write($payload);
+        $response = $response->withHeader('Content-Type', 'application/json');
+
+        return $response;
+    }
 }
 
 ?>
