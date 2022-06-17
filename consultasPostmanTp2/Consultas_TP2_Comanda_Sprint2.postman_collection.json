@@ -1,0 +1,241 @@
+{
+	"info": {
+		"_postman_id": "612c8483-98b3-490d-a715-d36723a19a81",
+		"name": "Consultas_TP2_Comanda_Sprint2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20377806"
+	},
+	"item": [
+		{
+			"name": "localhost:666/login",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "usuario",
+							"value": "{\"id\":1,\"clave\":1234}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:666/login",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/productos_SocioAut",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NTUyNDM1MTUsImRhdGEiOiJ7XCJpZFwiOjEsXCJjbGF2ZVwiOjEyMzQsXCJwdWVzdG9cIjpcInNvY2lvXCJ9IiwiYXBwIjoiSnd0b2tlbjo6Q3JlYXJUb2tlbiJ9.JTCI1tWHh4ThaEXx8rg71W5tX8EBatBF2tFZufLj6n8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "producto",
+							"value": "{\"nombre\":\"helado\",\"precio\":600,\"stock\":20,\"tipo\":\"repostero\",\"tiempo_preparacion\":10}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:666/productos",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"productos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/pedidos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NTUxNjgzMjksImRhdGEiOiJ7XCJpZFwiOjQsXCJjbGF2ZVwiOjEyMzQsXCJwdWVzdG9cIjpcIm1vem9cIn0iLCJhcHAiOiJKd3Rva2VuOjpDcmVhclRva2VuIn0.xa3ItGRhogruVyEVw37dI6mHCuBS0-kHE8Beh5hh4yA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "pedido",
+							"value": "{\"nombre_cliente\":\"valerio\",\"id_mozo\":4 ,\"id_mesa\":1,\"productos\":[{\"id\":7,\"cantidad\":3},{\"id\":8,\"cantidad\":2}]}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:666/pedidos",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"pedidos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/usuarios/baja_Autorizado",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NTUyNDM1MTUsImRhdGEiOiJ7XCJpZFwiOjEsXCJjbGF2ZVwiOjEyMzQsXCJwdWVzdG9cIjpcInNvY2lvXCJ9IiwiYXBwIjoiSnd0b2tlbjo6Q3JlYXJUb2tlbiJ9.JTCI1tWHh4ThaEXx8rg71W5tX8EBatBF2tFZufLj6n8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id_usuario",
+							"value": "3",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:666/usuarios/baja",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"usuarios",
+						"baja"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/usuarios/baja_NOAutorizado",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NTUwODUwODEsImRhdGEiOiJ7XCJhcGVsbGlkb1wiOlwicmVhcnRlXCIsXCJjbGF2ZVwiOjEyMzQsXCJwdWVzdG9cIjpcImNvY2luZXJvXCJ9IiwiYXBwIjoiSnd0b2tlbjo6Q3JlYXJUb2tlbiJ9.L9zp12u9NuosZmkob_hNA175YqdzWFtVjJ_cpcQ-ddI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id_usuario",
+							"value": "3",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:666/usuarios/baja",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"usuarios",
+						"baja"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:666/usuarios/modificacion",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NTUyNDM1MTUsImRhdGEiOiJ7XCJpZFwiOjEsXCJjbGF2ZVwiOjEyMzQsXCJwdWVzdG9cIjpcInNvY2lvXCJ9IiwiYXBwIjoiSnd0b2tlbjo6Q3JlYXJUb2tlbiJ9.JTCI1tWHh4ThaEXx8rg71W5tX8EBatBF2tFZufLj6n8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "nombre",
+							"value": "{\"id\":2,\"nombre\":\"beto\"}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:666/usuarios/modificacion",
+					"host": [
+						"localhost"
+					],
+					"port": "666",
+					"path": [
+						"usuarios",
+						"modificacion"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

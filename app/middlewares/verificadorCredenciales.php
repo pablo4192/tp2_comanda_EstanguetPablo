@@ -114,6 +114,27 @@ class VerificadorCredenciales
                                 $retorno = false;
                             }
                             break;
+                            case "bartender":
+                                if($ruta == "/productos_pedidos/pendientes")
+                                {
+                                    $retorno = true;
+                                }
+                                else
+                                {
+                                    $retorno = false;
+                                }
+                                break;
+                                case "repostero":
+                                if($ruta == "/productos_pedidos/pendientes")
+                                {
+                                    $retorno = true;
+                                }
+                                else
+                                {
+                                    $retorno = false;
+                                }
+                                break;
+
         }
         return $retorno;
 

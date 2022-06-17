@@ -18,8 +18,7 @@ class Pedido
         
     }
 
-    //Metodos
-    //.Calcular Total, obtiene del array productos nombre y cantidad por clave:valor
+   
     public static function Insertar($pedido)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
@@ -160,7 +159,7 @@ class Pedido
 
     }
 
-    public static function ListarProductosPendientesPreparacion($puesto)
+    public static function ListarProductosPendientesPreparacionXPuesto($puesto)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); 
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos_pedidos WHERE puesto_preparacion = :puesto AND estado = 'pendiente'");
@@ -269,6 +268,19 @@ class Pedido
         return false;
     }
 
+    public static function ListarProductosSegunEstado($id_pedido, $estado)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); 
+        $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos_pedidos WHERE estado = :estado AND id_pedido = :id_pedido");
+
+        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":estado", $estado, PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public static function CambiarEstadoProducto_pedido($producto_pedido, $dataUsuario)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); 
@@ -285,14 +297,111 @@ class Pedido
 
         if($filasAfectadas > 0)
         {
+            $arrayEnPreparacion = self::ListarProductosSegunEstado($producto_pedido->id_pedido, "en preparacion");
+            $arrayPendientes = self::ListarProductosSegunEstado($producto_pedido->id_pedido, "pendiente");
+            
+            if(count($arrayEnPreparacion) == 0 && count($arrayPendientes) == 0 && $producto_pedido->estado == "listo")
+            {
+                self::CambiarEstadoPedido($producto_pedido, "hora_egreso");
+            }
+            else if($producto_pedido->estado == "en preparacion")
+            {
+                $arrayPedidos = self::Listar();
+                
+                foreach($arrayPedidos as $p)
+                {
+                    if($p->id == $producto_pedido->id_pedido)
+                    {
+                        $horaIngreso = $p->hora_ingreso;
+                        break;
+                    }
+                }
+                
+                if($horaIngreso == "")
+                {
+                    self::CambiarEstadoPedido($producto_pedido, "hora_ingreso");
+                }
+                else
+                {
+                    self::CambiarEstadoPedido($producto_pedido, "");
+                }
+            }
             return true;
         }
         return false;
        
     }
 
+    public static function CambiarEstadoPedido($producto_pedido, $hora)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); 
+        $horaActual = date('H:i:s');
 
+        switch($hora)
+        {
+            case "hora_ingreso":
+                var_dump($horaActual);
+                $consulta = $accesoADatos->PrepararConsulta("UPDATE pedidos SET estado = :estado, hora_ingreso = :hora_ingreso WHERE id = :id_pedido");
+                $consulta->bindValue(":hora_ingreso", $horaActual, PDO::PARAM_STR);
+                break;
+                case "hora_egreso":
+                    var_dump($horaActual);
+                    $consulta = $accesoADatos->PrepararConsulta("UPDATE pedidos SET estado = :estado, hora_egreso = :hora_egreso WHERE id = :id_pedido");
+                    $consulta->bindValue(":hora_egreso", $horaActual, PDO::PARAM_STR);
+                    break;
+                    default:
+                    var_dump($horaActual);
+                    $consulta = $accesoADatos->PrepararConsulta("UPDATE pedidos SET estado = :estado WHERE id = :id_pedido");
+                    break;
+        }
+        
 
+        $consulta->bindValue(":id_pedido", $producto_pedido->id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":estado", $producto_pedido->estado, PDO::PARAM_STR);
+        
+        $consulta->execute();
+
+        $filasAfectadas = $consulta->rowCount();
+
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;
+       
+    }
+
+    public static function ListarProductosSegunIdPedidoYPuesto($id_pedido, $puesto)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); 
+        $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos_pedidos WHERE puesto_preparacion = :puesto AND id_pedido = :id_pedido");
+
+        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":puesto", $puesto, PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function VerificarEstadoEnDB($producto_pedido, $puesto)
+    {
+        $arrayProductos = self::ListarProductosSegunIdPedidoYPuesto($producto_pedido->id_pedido, $puesto);
+        $retorno = false;
+
+        $estado = $arrayProductos[0]['estado'];
+        
+
+        if($estado == "pendiente" && $producto_pedido->estado == "en preparacion")
+        {
+            $retorno = true;
+        }
+        else if($estado == "en preparacion" && $producto_pedido->estado == "listo")
+        {
+            $retorno = true;
+        }
+        return $retorno;
+    }
 
 }
 

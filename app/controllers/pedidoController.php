@@ -136,9 +136,27 @@ class PedidoController
 
         $dataToken = Jwtoken::Verificar($token);
 
-        $listaPendientes = Pedido::ListarProductosPendientesPreparacion($dataToken->puesto);
+        $listaPendientes = Pedido::ListarProductosPendientesPreparacionXPuesto($dataToken->puesto);
 
-        $payload = json_encode(array("listaProductos_PendientesPreparacion" => $listaPendientes));
+        if(count($listaPendientes) == 0)
+        {
+            if($dataToken->puesto == "socio")
+            {
+                $payload = json_encode(array("Mensaje" => "No hay productos pendientes de preparacion para el puesto " . $dataToken->puesto . ", ocupese de administrar por favor"));
+            }
+            else if($dataToken->puesto == "mozo")
+            {
+                $payload = json_encode(array("Mensaje" => "No hay productos pendientes de preparacion para el puesto " . $dataToken->puesto . ". Verifique en pedidos/pendientes si hay pedidos listos"));
+            }
+            else
+            {
+                $payload = json_encode(array("Mensaje" => "No hay productos pendientes de preparacion para el puesto " . $dataToken->puesto . ", tomese un descanso hasta proximo aviso"));
+            }
+        }
+        else
+        {
+            $payload = json_encode(array("listaProductos_PendientesPreparacion" => $listaPendientes));
+        }
 
         $response->getBody()->write($payload);
 
@@ -166,24 +184,16 @@ class PedidoController
         }
 
         $dataToken = Jwtoken::Verificar($token);
-
-        if(array_key_exists("en_preparacion", $data))
-        {
-            $producto_pedido = json_decode($data['en_preparacion']);
-        }
-        else if(array_key_exists("listo", $data))
-        {
-            $producto_pedido = json_decode($data['listo']);
-        }
+        $producto_pedido = json_decode($data['estado']);
 
         if(Pedido::CambiarEstadoProducto_pedido($producto_pedido, $dataToken))
         {
-            $payload = json_encode(array("Mensaje" => "El producto relacionado con el pedido " . $producto_pedido->id_pedido . " a sido modificado en la base de datos"));
+            $payload = json_encode(array("Mensaje" => "Al producto relacionado con el pedido " . $producto_pedido->id_pedido . " se le modifico  el estado en la base de datos"));
             $response = $response->withStatus(200);
         }
         else
         {
-            $payload = json_encode(array("Error" => "El estado del producto relacionado con el pedido " . $producto_pedido->id_pedido  . " NO a sido modificado en la base de datos"));
+            $payload = json_encode(array("Error" => "Al producto relacionado con el pedido " . $producto_pedido->id_pedido . " NO se le modifico el estado en la base de datos"));
             $response = $response->withStatus(400); 
         }
         $response->getBody()->write($payload);

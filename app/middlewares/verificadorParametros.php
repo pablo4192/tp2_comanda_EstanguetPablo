@@ -846,6 +846,67 @@ class VerificadorParametros
         return $response;
     }
 
+    public static function VerificarParametrosCambiosEstadoPedidos($request, $handler)
+    {
+        $data = $request->getParsedBody();
+        $method = $request->getMethod();
+        $response = new Response();
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+
+        if(!isset($data))
+        {   
+            $response->getBody()->write(json_encode(array("Error" => "No ingreso ningun parametro")));
+        }
+        else
+        {
+            if(array_key_exists("estado", $data))
+            {
+                $dataJson = $data['estado'];
+                $producto = json_decode($dataJson);
+                
+                
+                if(isset($producto->id_pedido) && $producto->id_pedido > 0 && isset($producto->estado) && ($producto->estado == "listo" || $producto->estado == "en preparacion"))
+                {
+                    $dataToken = Jwtoken::Verificar($token);
+                    
+                    if(Pedido::VerificarEstadoEnDB($producto, $dataToken->puesto))
+                    {
+                        $response = $handler->handle($request);
+                        $response->getBody()->write("<br>Parametros verificados, Metodo de consulta: " . $method);
+                    }
+                    else
+                    {
+                        $response->getBody()->write(json_encode(array("Error" => "Accion invalida en cambios de estado del pedido, esta pasando por alto un estado")));
+                    }
+                }
+                else
+                {
+                    $response->getBody()->write(json_encode(array("Error" => "Verifique parametros, debe ingresar {'id_pedido':id,'estado':estado}")));
+                }
+
+            }
+            else
+            {
+                $response->getBody()->write(json_encode(array("Error" => "No ingreso parametro estado")));
+            }
+
+        }
+        return $response;
+
+
+    }
+
 }
 
 ?>

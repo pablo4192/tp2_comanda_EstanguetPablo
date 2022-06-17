@@ -92,7 +92,7 @@ $app->group('/pedidos/modificacion', function (RouteCollectorProxy $group){
 //Cambios de estado de los pedidos / productos_pedidos / mesas
 $app->group('/productos_pedidos/pendientes', function (RouteCollectorProxy $group){
     $group->get('[/]', \PedidoController::class . ':ListarProductos_PedidosPendientes'); //Me retorna los productos pendientes de preparacion segun puesto
-    $group->post('[/estado]', \PedidoController::class . ':CambiarEstadoProducto_pedido'); //Validar parametros
+    $group->post('[/estado]', \PedidoController::class . ':CambiarEstadoProducto_pedido')->add(\VerificadorParametros::class . ':VerificarParametrosCambiosEstadoPedidos');
     
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
