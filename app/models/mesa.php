@@ -46,7 +46,7 @@ class Mesa
         return false;
     }
 
-    public static function OcuparMesa($pedido) //Ver si lo modifico para uso general de cambios de estado
+    public static function OcuparMesa($pedido) 
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
         $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET estado = 'cliente esperando el pedido', id_pedido = :id_pedido, nombre_cliente = :nombre_cliente WHERE id = :id_mesa");
@@ -81,7 +81,48 @@ class Mesa
 
         if($retorno)
         {
-            if($retorno[0] == $id_mesa && $retorno[1] == "libre")
+            if($retorno[0] == $id_mesa && $retorno[1] == "cerrada")
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function CambiarEstado($id_mesa, $estado)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET estado = :estado WHERE id = :id_mesa");
+
+        $consulta->bindValue(":estado", $estado, PDO::PARAM_STR);
+        $consulta->bindValue(":id_mesa", $id_mesa, PDO::PARAM_INT);
+
+        $consulta->execute();
+
+        $filasAfectadas = $consulta->rowCount();
+
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;
+
+    }
+
+    public static function Cerrar($data)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET estado = 'cerrada',nombre_cliente = '',id_pedido = '' WHERE id = :id_mesa"); 
+
+        $consulta->bindValue(":id_mesa", $data->id, PDO::PARAM_INT);
+
+        $consulta->execute();
+
+        $filasAfectadas = $consulta->rowCount();
+
+        if($filasAfectadas > 0)
+        {
+            if(Pedido::CerrarPedido($data))
             {
                 return true;
             }

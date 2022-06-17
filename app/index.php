@@ -91,12 +91,15 @@ $app->group('/pedidos/modificacion', function (RouteCollectorProxy $group){
 
 //Cambios de estado de los pedidos / productos_pedidos / mesas
 $app->group('/productos_pedidos/pendientes', function (RouteCollectorProxy $group){
-    $group->get('[/]', \PedidoController::class . ':ListarProductos_PedidosPendientes'); //Me retorna los productos pendientes de preparacion segun puesto
+    $group->get('[/]', \PedidoController::class . ':ListarProductos_PedidosPendientes'); //Me retorna los productos pendientes de preparacion segun puesto, analiza el token
     $group->post('[/estado]', \PedidoController::class . ':CambiarEstadoProducto_pedido')->add(\VerificadorParametros::class . ':VerificarParametrosCambiosEstadoPedidos');
     
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
-
+$app->group('/pedidos/listos', function (RouteCollectorProxy $group){
+    $group->get('[/]', \PedidoController::class . ':ListarPedidosListos');
+    
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
 
 //----------------------------------------------------------
 
@@ -113,6 +116,13 @@ $app->group('/mesas/baja', function (RouteCollectorProxy $group){
 
 //Modificar Mesas
 //La modificacion de la mesa se hace a partir de los cambios en los pedidos, Se pueden agregar mesas o quitar mesas del comercio
+
+//Cambiar estado mesa; el mozo le lleva el pedido, la mesa termina de comer el mozo le cobra, el socio cierra la mesa y vuelve a estar disponible
+$app->group('/mesas/cambiosEstado', function (RouteCollectorProxy $group){
+    $group->post('[/entregar]', \MesaController::class . ':EntregarPedido');
+    $group->put('[/cobrar]', \MesaController::class . ':CobrarPedido');
+    $group->delete('[/cerrar]', \MesaController::class . ':CerrarMesa');
+})->add(\VerificadorCredenciales::class . ':VerificarToken')->add(\VerificadorParametros::class . ':VerificarParametrosCambiosEstadoMesas');
 
 //----------------------------------------------------------
 

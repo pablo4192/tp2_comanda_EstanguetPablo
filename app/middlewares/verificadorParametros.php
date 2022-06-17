@@ -373,7 +373,7 @@ class VerificadorParametros
         return $response;
     }
 
-    public static function VerificarParametrosPedido($request, $handler)  //Hacer verificacion de accion por e token
+    public static function VerificarParametrosPedido($request, $handler) 
     {
         $data = $request->getParsedBody();
         $method = $request->getMethod();
@@ -902,6 +902,113 @@ class VerificadorParametros
             }
 
         }
+        return $response;
+
+
+    }
+
+    public static function VerificarParametrosCambiosEstadoMesas($request, $handler)
+    {
+        $data = $request->getParsedBody();
+        $method = $request->getMethod();
+        $response = new Response();
+
+        if(!isset($data))
+        {   
+            $response->getBody()->write(json_encode(array("Error" => "No ingreso ningun parametro")));
+        }
+        else
+        {
+            
+            switch($method)
+            {
+                case "POST":
+                    if(array_key_exists("entregar", $data))
+                    {
+                        $id = $data['entregar'];
+                        
+
+                        if(isset($id))
+                        {
+                            if(is_numeric($id) && $id > 0)
+                            {
+                                $response = $handler->handle($request);
+                                $response->getBody()->write(json_encode(array("Mensaje" => "Parametros verificados, metodo de consulta: " . $method)));   
+                            }
+                            else
+                            {
+                                $response->getBody()->write(json_encode(array("Error" => "Verifique parametros (entregar {'id':id})")));   
+                            }
+                        }
+                        else
+                        {
+                            $response->getBody()->write(json_encode(array("Error" => "No ingreso parametro 'id' de la mesa")));   
+                        }
+                    }
+                    else
+                    {
+                        $response->getBody()->write(json_encode(array("Error" => "No ingreso parametro 'entregar'")));   
+                    }
+                    break;
+                    case "PUT":
+                        if(array_key_exists("cobrar", $data))
+                        {
+                            $id = $data['cobrar'];
+                            
+
+                            if(isset($id))
+                            {
+                                if(is_numeric($id) && $id > 0)
+                                {
+                                    $response = $handler->handle($request);
+                                    $response->getBody()->write(json_encode(array("Mensaje" => "Parametros verificados, metodo de consulta: " . $method)));   
+                                }
+                                else
+                                {
+                                    $response->getBody()->write(json_encode(array("Error" => "Verifique parametros (entregar {'id':id})")));   
+                                }
+                            }
+                            else
+                            {
+                                $response->getBody()->write(json_encode(array("Error" => "No ingreso parametro 'id' de la mesa")));   
+                            }
+                        }
+                        else
+                        {
+                            $response->getBody()->write(json_encode(array("Error" => "No ingreso parametro 'cobrar'")));   
+                        }
+                        break;
+                        case "DELETE":
+                            if(array_key_exists("cerrar", $data))
+                            {
+                                $dataJson = $data['cerrar'];
+                                $datos = json_decode($dataJson);
+
+                                if(isset($datos->id) && isset($datos->medio_de_pago))
+                                {
+                                    if(is_numeric($datos->id) && $datos->id > 0 && ($datos->medio_de_pago == "efectivo" || $datos->medio_de_pago == "mp" || $datos->medio_de_pago == "debito" || $datos->medio_de_pago == "credito"))
+                                    {
+                                        $response = $handler->handle($request);
+                                        $response->getBody()->write(json_encode(array("Mensaje" => "Parametros verificados, metodo de consulta: " . $method)));   
+                                    }
+                                    else
+                                    {
+                                        $response->getBody()->write(json_encode(array("Error" => "Verifique parametros (cobrar {'id_mesa':id,'medio_de_pago':medio})")));   
+                                    }
+                                }
+                                else
+                                {
+                                    $response->getBody()->write(json_encode(array("Error" => "No ingreso parametro 'id' de la mesa o medio_de_pago")));   
+                                }
+                            }
+                            else
+                            {
+                                $response->getBody()->write(json_encode(array("Error" => "No ingreso parametro 'cerrar'")));   
+                            }
+                            break;
+            }
+        }
+
         return $response;
 
 

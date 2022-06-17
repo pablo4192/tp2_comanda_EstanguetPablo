@@ -85,7 +85,7 @@ class VerificadorCredenciales
                 $retorno = true;
                 break;
                 case "mozo":
-                    if($ruta == "/pedidos" || $ruta == "/pedidos/baja" || $ruta == "/pedidos/modificacion")
+                    if($ruta == "/pedidos" || $ruta == "/pedidos/baja" || $ruta == "/pedidos/modificacion" || $ruta == "/pedidos/listos" || $ruta == "/mesas/cambiosEstado")
                     {
                         $retorno = true;
                     }

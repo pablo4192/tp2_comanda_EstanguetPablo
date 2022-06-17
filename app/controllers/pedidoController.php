@@ -201,6 +201,20 @@ class PedidoController
 
         return $response;
     }
+
+    public function ListarPedidosListos($request, $response, $args)
+    {
+        $listaPedidosListos= Pedido::ListarListos();
+
+        $payload = json_encode(array("listaPedidos" => $listaPedidosListos));
+
+        $response->getBody()->write($payload);
+
+        $response = $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+
+        return $response;
+    }
+
 }
 
 ?>

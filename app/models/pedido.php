@@ -403,6 +403,37 @@ class Pedido
         return $retorno;
     }
 
+    public static function ListarListos()
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); //Cambiar por .env
+        $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM pedidos WHERE estado = 'listo' AND medio_de_pago = ''");
+
+        $consulta->execute();
+
+        return $consulta->fetchAll(PDO::FETCH_CLASS, "Pedido");
+
+    }
+
+    public static function CerrarPedido($dataPedido)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $consulta = $accesoADatos->PrepararConsulta("UPDATE pedidos SET medio_de_pago = :medio_de_pago WHERE id_mesa = :id_mesa");
+
+        $consulta->bindValue(":medio_de_pago", $dataPedido->medio_de_pago, PDO::PARAM_STR);
+        $consulta->bindValue(":id_mesa", $dataPedido->id, PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        $filasAfectadas = $consulta->rowCount();
+
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;
+
+
+    }
 }
 
 ?>
