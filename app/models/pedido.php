@@ -22,9 +22,13 @@ class Pedido
     public static function Insertar($pedido)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
-        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO pedidos (nombre_cliente,id_mozo,id_mesa,total,fecha,estado) VALUES (:nombre_cliente,:id_mozo,:id_mesa,:total,:fecha,:estado)");
+        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO pedidos (id,nombre_cliente,id_mozo,id_mesa,total,fecha,estado) VALUES (:id,:nombre_cliente,:id_mozo,:id_mesa,:total,:fecha,:estado)");
 
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+        $pedido->id = substr(str_shuffle($chars), 0, -31);
         
+        
+        $consulta->bindValue(":id", $pedido->id, PDO::PARAM_STR);
         $consulta->bindValue(":nombre_cliente", $pedido->nombre_cliente, PDO::PARAM_STR);
         $consulta->bindValue(":id_mozo", $pedido->id_mozo, PDO::PARAM_INT);
         $consulta->bindValue(":id_mesa", $pedido->id_mesa, PDO::PARAM_INT);
@@ -32,11 +36,16 @@ class Pedido
         $consulta->bindValue(":fecha", $pedido->fecha, PDO::PARAM_STR); //No me aparece en la base de datos la hora
         $consulta->bindValue(":estado", $pedido->estado, PDO::PARAM_STR);
 
-        if($consulta->execute())
+        $consulta->execute();
+        
+        $filasAfectadas = $consulta->rowCount();
+        
+        if($filasAfectadas > 0)
         {
-            $pedido->id = $accesoADatos->obtenerUltimoId();
             return true;
         }
+        return false;  
+            
     }
 
     public static function EliminarPedido($id_pedido)
@@ -148,6 +157,42 @@ class Pedido
         return $total;
     }
 
+    public static function InsertarTiempoEstimadoPreparacion($productos, $id_pedido)
+    {
+        $mayorTiempo = 0;
+        
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $consulta = $accesoADatos->PrepararConsulta("SELECT tiempo_preparacion FROM productos WHERE id = :id");
+
+        for($i = 0; $i < count($productos); $i++)
+        {
+            $consulta->bindValue(':id', $productos[$i]->id, PDO::PARAM_INT);
+            $consulta->execute();
+
+            $tiempo_preparacion = $consulta->fetch(PDO::FETCH_ASSOC);
+            
+            if($tiempo_preparacion['tiempo_preparacion'] > $mayorTiempo)
+            {
+                $mayorTiempo = $tiempo_preparacion['tiempo_preparacion'];
+            }
+            
+        }
+
+        $consulta = $accesoADatos->PrepararConsulta("UPDATE pedidos SET tiempo_estimado = :mayorTiempo WHERE id = :id");
+        $consulta->bindValue(":id", $id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":mayorTiempo", $mayorTiempo, PDO::PARAM_INT);
+
+        $consulta->execute();
+
+        $filasAfectadas = $consulta->rowCount();
+        
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public static function Listar()
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); //Cambiar por .env
@@ -176,11 +221,12 @@ class Pedido
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
         $consulta = $accesoADatos->PrepararConsulta("INSERT INTO productos_pedidos (id_pedido,id_producto,puesto_preparacion,estado) VALUES (:id_pedido,:id_producto,:puesto_preparacion,'pendiente')");
 
-        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_STR);
         $consulta->bindValue(":id_producto", $producto->id, PDO::PARAM_INT);
         $consulta->bindValue(":puesto_preparacion", $puesto_preparacion, PDO::PARAM_STR);
 
         $consulta->execute();
+        
     }
 
     private static function EliminarRelaciones($id_pedido)
@@ -231,7 +277,6 @@ class Pedido
             while($cantidad > 0)
             {
                 $puesto_preparacion = self::AsignarPuestoPreparacion($productos[$i]->id);
-
                 
                 self::Relacionar($productos[$i], $puesto_preparacion, $id_pedido);
                 $cantidad --;
@@ -432,6 +477,21 @@ class Pedido
         }
         return false;
 
+
+    }
+
+    public static function ListarPorIdPedidoYMesa($id_pedido, $id_mesa)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); //Cambiar por .env
+        $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM pedidos WHERE id = :id_pedido AND id_mesa = :id_mesa");
+
+        $consulta->bindValue("id_pedido", $id_pedido, PDO::PARAM_STR);
+        $consulta->bindValue("id_mesa", $id_mesa, PDO::PARAM_INT);
+
+
+        $consulta->execute();
+
+        return $consulta->fetch(PDO::FETCH_ASSOC);
 
     }
 }

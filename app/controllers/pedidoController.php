@@ -3,6 +3,8 @@ require_once "./models/pedido.php";
 require_once "./models/mesa.php";
 require_once "./models/imagen.php";
 
+
+
 class PedidoController
 {
     public function AltaPedido($request, $response, $args)
@@ -31,11 +33,13 @@ class PedidoController
                 $response->getBody()->write($mensajeImagen."/ ");
             }
 
+            Pedido::InsertarTiempoEstimadoPreparacion($pedido->productos, $pedidoAInsertar->id);
+
             Mesa::OcuparMesa($pedidoAInsertar); 
 
             Pedido::RelacionarProductosPedidos($pedido->productos,$pedidoAInsertar->id);
             
-            $payload = json_encode(array("mensaje" => "El pedido fue ingresado con exito, la mesa se marco como ocupada y se le asocio el pedido"));
+            $payload = json_encode(array("mensaje" => "El pedido fue ingresado con exito, la mesa se marco como ocupada y se le asocio el pedido. Su numero de id_pedido es: ".$pedidoAInsertar->id));
             $response = $response->withStatus(200);
         }
         else
@@ -213,6 +217,47 @@ class PedidoController
         $response = $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 
         return $response;
+    }
+
+    public function RetornarTiempoDeEspera($request, $response, $args)  //VALIDAR PARAMETROS
+    {
+        $data = $request->getParsedBody();   
+        $dataJson = $data['info'];
+        $dataPedido = json_decode($dataJson);
+
+        $pedido = Pedido::ListarPorIdPedidoYMesa($dataPedido->id_pedido, $dataPedido->id_mesa);
+
+        
+        if($pedido['hora_ingreso'] != "")
+        {
+            $minutosIngreso = intval(explode(":", $pedido['hora_ingreso'])[1]);
+            $minutosActuales = intval(date("i"));
+            $minutosPasados = $minutosActuales - $minutosIngreso;
+    
+            $minutosRestantes = intval($pedido['tiempo_estimado']) - $minutosPasados;
+    
+            if($minutosRestantes < 1)
+            {
+                $payload = json_encode(array("Mensaje" => "Disculpe las demoras, su pedido ya esta por salir. Han pasado " . $minutosPasados . " minutos"));
+            }
+            else
+            {
+                $payload = json_encode(array("Mensaje" => "Su pedido estara listo en aproximadamente " . $minutosRestantes . " minutos"));
+    
+            }
+        }
+        else
+        {
+            $payload = json_encode(array("Mensaje" => "Disculpe las demoras su pedido todavia no ingreso a la cocina"));
+        }
+
+
+        $response->getBody()->write($payload);
+        $response = $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+
+        return $response;
+
+        
     }
 
 }

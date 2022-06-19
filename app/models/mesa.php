@@ -52,7 +52,7 @@ class Mesa
         $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET estado = 'cliente esperando el pedido', id_pedido = :id_pedido, nombre_cliente = :nombre_cliente WHERE id = :id_mesa");
 
         $consulta->bindValue(':id_mesa', $pedido->id_mesa, PDO::PARAM_INT);
-        $consulta->bindValue(':id_pedido', $pedido->id, PDO::PARAM_INT);
+        $consulta->bindValue(':id_pedido', $pedido->id, PDO::PARAM_STR);
         $consulta->bindValue(':nombre_cliente', $pedido->nombre_cliente, PDO::PARAM_STR);
 
         return $consulta->execute();

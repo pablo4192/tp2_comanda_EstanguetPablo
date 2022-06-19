@@ -21,6 +21,7 @@ require_once "./middlewares/verificadorParametros.php";
 require_once "./controllers/loggerController.php";
 require_once "./middlewares/verificadorCredenciales.php";
 
+date_default_timezone_set("America/Argentina/Buenos_Aires");
 
 // Load ENV
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -37,7 +38,7 @@ $app->addBodyParsingMiddleware();
 
 //----------------------------------------------------------
 
-//Registro-Listar Productos     //Verificado solo socios pueden ingresar productos (ver listar)
+//Registro-Listar Productos    
 $app->group('/productos', function (RouteCollectorProxy $group){
     $group->get('[/]', \ProductoController::class . ':ListarProductos');
     $group->post('[/producto]', \ProductoController::class . ':AltaProducto')->add(\VerificadorParametros::class . ':VerificarParametrosProductoAlta');
@@ -55,7 +56,7 @@ $app->group('/productos/modificacion', function (RouteCollectorProxy $group){
 
 //----------------------------------------------------------
 
-//Registro-Listar Usuarios (Se valida acceso en sprint 2)
+//Registro-Listar Usuarios 
 $app->group('/usuarios', function (RouteCollectorProxy $group){
     $group->get('[/]', \UsuarioController::class . ':ListarUsuarios');
     $group->post('[/usuario]', \UsuarioController::class . ':AltaUsuario')->add(\VerificadorParametros::class . ':VerificarParametrosUsuario');
@@ -73,7 +74,7 @@ $app->group('/usuarios/modificacion', function (RouteCollectorProxy $group){
 
 //----------------------------------------------------------
 
-//Registro-Listar Pedidos (se relacionan con la mesa al hacer el alta)  //Verificado solo mozos pueden registrar pedidos (ver listar)
+//Registro-Listar Pedidos (se relacionan con la mesa al hacer el alta, si la misma esta disponible) 
 $app->group('/pedidos', function (RouteCollectorProxy $group){
     $group->get('[/]', \PedidoController::class . ':ListarPedidos');
     $group->post('[/pedido]', \PedidoController::class . ':AltaPedido')->add(\VerificadorParametros::class . ':VerificarParametrosPedido');
@@ -93,13 +94,17 @@ $app->group('/pedidos/modificacion', function (RouteCollectorProxy $group){
 $app->group('/productos_pedidos/pendientes', function (RouteCollectorProxy $group){
     $group->get('[/]', \PedidoController::class . ':ListarProductos_PedidosPendientes'); //Me retorna los productos pendientes de preparacion segun puesto, analiza el token
     $group->post('[/estado]', \PedidoController::class . ':CambiarEstadoProducto_pedido')->add(\VerificadorParametros::class . ':VerificarParametrosCambiosEstadoPedidos');
-    
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
+//Endpoint para listar los pedidos que ya estan listos para servir
 $app->group('/pedidos/listos', function (RouteCollectorProxy $group){
     $group->get('[/]', \PedidoController::class . ':ListarPedidosListos');
     
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/pedidos/cliente', function (RouteCollectorProxy $group){
+    $group->post('[/info]', \PedidoController::class . ':RetornarTiempoDeEspera');
+});
 
 //----------------------------------------------------------
 
@@ -117,7 +122,7 @@ $app->group('/mesas/baja', function (RouteCollectorProxy $group){
 //Modificar Mesas
 //La modificacion de la mesa se hace a partir de los cambios en los pedidos, Se pueden agregar mesas o quitar mesas del comercio
 
-//Cambiar estado mesa; el mozo le lleva el pedido, la mesa termina de comer el mozo le cobra, el socio cierra la mesa y vuelve a estar disponible
+//Cambiar estado mesa; el mozo le lleva el pedido, la mesa termina de comer el mozo le cobra, el socio cierra la mesa y vuelve a estar disponible (cerrada)
 $app->group('/mesas/cambiosEstado', function (RouteCollectorProxy $group){
     $group->post('[/entregar]', \MesaController::class . ':EntregarPedido');
     $group->put('[/cobrar]', \MesaController::class . ':CobrarPedido');
