@@ -15,7 +15,7 @@ class Usuario
         
     }
  
-    //Metodos:
+    
     public static function InsertarProducto($producto, $ingresado_por_id)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
@@ -50,6 +50,33 @@ class Usuario
             return true;
         }
         return false;
+    }
+
+    public static function InsertarDesdeCsv($usuario)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO usuarios (nombre,apellido,clave,puesto) VALUES (:nombre,:apellido,:clave,:puesto)");
+        
+     
+        $consulta->bindValue(":nombre", $usuario->nombre, PDO::PARAM_STR);
+        $consulta->bindValue(":apellido", $usuario->apellido, PDO::PARAM_STR);
+        $consulta->bindValue(":clave", $usuario->clave, PDO::PARAM_INT);
+        $consulta->bindValue(":puesto", $usuario->puesto, PDO::PARAM_STR);
+      
+        
+        
+            $consulta->execute();
+        
+        
+
+        
+        $filasAfectadas = $consulta->rowCount();
+        
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;  
     }
 
     public static function EliminarProducto($id_producto)
@@ -194,7 +221,7 @@ class Usuario
         return false;
     }
 
-    public static function EsMozo($id_mozo) //Ver si queda
+    public static function EsMozo($id_mozo) 
     {
         $arrayDeUsuarios = self::Listar();
 
@@ -208,7 +235,7 @@ class Usuario
         return false;
     }
 
-    public static function EsSocio($id_socio) //Ver si queda
+    public static function EsSocio($id_socio) 
     {
         $arrayDeUsuarios = self::Listar();
 

@@ -1,0 +1,5 @@
+nombre;precio;stock;tipo;tiempo preparacion;ingresado por id
+tarta;800;20;cocinero;10;1
+vino;500;10;bartender;3;1
+fernet;700;30;bartender;5;1
+quilmes;120;35;cervecero;3;1

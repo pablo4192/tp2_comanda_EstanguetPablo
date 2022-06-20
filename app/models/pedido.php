@@ -11,7 +11,11 @@ class Pedido
     //Estos NO los pasa el mozo
     public $total;
     public $fecha;
+    public $tiempo_estimado;
+    public $hora_ingreso;
+    public $hora_egreso;
     public $estado;
+    public $medio_de_pago;
 
     public function __construct()
     {
@@ -48,6 +52,44 @@ class Pedido
             
     }
 
+    public static function InsertarDesdeCsv($pedido)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO pedidos (id,nombre_cliente,id_mozo,id_mesa,total,fecha,tiempo_estimado,hora_ingreso,hora_egreso,estado,medio_de_pago) VALUES (:id,:nombre_cliente,:id_mozo,:id_mesa,:total,:fecha,:tiempo_estimado,:hora_ingreso,:hora_egreso,:estado,:medio_de_pago)");
+        
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+        $pedido->id = substr(str_shuffle($chars), 0, -31);
+
+        $consulta->bindValue(":id", $pedido->id, PDO::PARAM_STR);
+        $consulta->bindValue(":nombre_cliente", $pedido->nombre_cliente, PDO::PARAM_STR);
+        $consulta->bindValue(":id_mozo", $pedido->id_mozo, PDO::PARAM_INT);
+        $consulta->bindValue(":id_mesa", $pedido->id_mesa, PDO::PARAM_INT);
+        $consulta->bindValue(":total", $pedido->total, PDO::PARAM_INT);
+        $consulta->bindValue(":fecha", $pedido->fecha, PDO::PARAM_STR); 
+        $consulta->bindValue(":tiempo_estimado", $pedido->tiempo_estimado, PDO::PARAM_STR);
+        $consulta->bindValue(":hora_ingreso", $pedido->hora_ingreso, PDO::PARAM_STR);
+        $consulta->bindValue(":hora_egreso", $pedido->hora_egreso, PDO::PARAM_STR);
+        $consulta->bindValue(":estado", $pedido->estado, PDO::PARAM_STR);
+        $consulta->bindValue(":medio_de_pago", $pedido->medio_de_pago, PDO::PARAM_STR);
+
+        try
+        {
+            $consulta->execute();
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
+        
+        $filasAfectadas = $consulta->rowCount();
+        
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;  
+    }
+
     public static function EliminarPedido($id_pedido)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
@@ -70,7 +112,7 @@ class Pedido
         return false;
     }
 
-    //Id_pedido, id_mozo, total, fecha No se pueden modificar ya que se generan en el programa; el id_mozo no deberia poder cambiarse ya que el mismo es el que toma el pedido
+   
     public static function ModificarPedido($pedido)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");

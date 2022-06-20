@@ -1,0 +1,9 @@
+nombre cliente;id mozo;id mesa;total;fecha;tiempo estimado;hora ingreso;hora egreso;estado;medio de pago
+valerio;4;1;3700;14/6/2022;;01:34:15;01:35:40;listo;efectivo
+gerardo;4;7;1120;15/6/2022;;02:40:18;02:42:55;listo;mp
+lucrecia;4;2;4000;17/6/2022;;01:22:25;01:27:01;listo;credito
+berta;4;8;3700;18/6/2022;;;;pendiente;
+cecilia;4;3;3700;19/6/2022;15;;;pendiente;
+mirko;4;2;3700;18/6/2022;15;;;pendiente;
+yanet;4;1;3700;19/6/2022;15;21:48:29;;en preparacion;
+betito;4;7;3700;20/6/2022;15;;;pendiente;

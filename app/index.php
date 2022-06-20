@@ -20,6 +20,7 @@ require_once "./controllers/mesaController.php";
 require_once "./middlewares/verificadorParametros.php";
 require_once "./controllers/loggerController.php";
 require_once "./middlewares/verificadorCredenciales.php";
+require_once "./controllers/archivoController.php";
 
 date_default_timezone_set("America/Argentina/Buenos_Aires");
 
@@ -128,6 +129,40 @@ $app->group('/mesas/cambiosEstado', function (RouteCollectorProxy $group){
     $group->put('[/cobrar]', \MesaController::class . ':CobrarPedido');
     $group->delete('[/cerrar]', \MesaController::class . ':CerrarMesa');
 })->add(\VerificadorCredenciales::class . ':VerificarToken')->add(\VerificadorParametros::class . ':VerificarParametrosCambiosEstadoMesas');
+
+//----------------------------------------------------------
+
+//DESCARGA DE DATOS BD A UN ARCHIVO .CSV
+
+$app->group('/descarga/pedidos', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ArchivoController::class . ':DescargarDatos_Csv');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/descarga/usuarios', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ArchivoController::class . ':DescargarDatos_Csv');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/descarga/productos', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ArchivoController::class . ':DescargarDatos_Csv');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+//CARGA DE DATOS DESDE UN ARCHIVO .CSV A BD
+
+$app->group('/cargar/pedidos', function (RouteCollectorProxy $group){
+    $group->post('[/archivo_csv]', \ArchivoController::class . ':CargarDatos_DesdeCsv')->add(\VerificadorParametros::class . ':VerificarParametrosArchivos');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/cargar/usuarios', function (RouteCollectorProxy $group){
+    $group->post('[/archivo_csv]', \ArchivoController::class . ':CargarDatos_DesdeCsv')->add(\VerificadorParametros::class . ':VerificarParametrosArchivos');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/cargar/productos', function (RouteCollectorProxy $group){
+    $group->post('[/archivo_csv]', \ArchivoController::class . ':CargarDatos_DesdeCsv')->add(\VerificadorParametros::class . ':VerificarParametrosArchivos');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+
+
+
 
 //----------------------------------------------------------
 

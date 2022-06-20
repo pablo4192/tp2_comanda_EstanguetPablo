@@ -9,6 +9,7 @@ class Producto
     public $stock;
     public $tipo;
     public $tiempo_preparacion;
+    public $ingresado_por_id;
    
 
     public function __construct() //Constructor vacio para fetch
@@ -41,6 +42,38 @@ class Producto
             return false;
         }
         return true;
+    }
+
+    public static function InsertarDesdeCsv($producto)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO productos (nombre,precio,stock,tipo,tiempo_preparacion,ingresado_por_id) VALUES (:nombre,:precio,:stock,:tipo,:tiempo_preparacion,:ingresado_por_id)");
+        
+        
+        $consulta->bindValue(":nombre", $producto->nombre, PDO::PARAM_STR);
+        $consulta->bindValue(":precio", $producto->precio, PDO::PARAM_INT);
+        $consulta->bindValue(":stock", $producto->stock, PDO::PARAM_INT);
+        $consulta->bindValue(":tipo", $producto->tipo, PDO::PARAM_STR);
+        $consulta->bindValue(":tiempo_preparacion", $producto->tiempo_preparacion, PDO::PARAM_INT); 
+        $consulta->bindValue(":ingresado_por_id", $producto->ingresado_por_id, PDO::PARAM_INT);
+        
+        try
+        {
+            $consulta->execute();
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
+
+        
+        $filasAfectadas = $consulta->rowCount();
+        
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;  
     }
 }
 
