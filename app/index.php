@@ -103,9 +103,10 @@ $app->group('/pedidos/listos', function (RouteCollectorProxy $group){
     
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
+//Cliente consulta tiempo de espera de su pedido
 $app->group('/pedidos/cliente', function (RouteCollectorProxy $group){
     $group->post('[/info]', \PedidoController::class . ':RetornarTiempoDeEspera');
-});
+})->add(\VerificadorParametros::class . ':VerificarParametrosTiempoEspera');
 
 //----------------------------------------------------------
 
@@ -129,6 +130,11 @@ $app->group('/mesas/cambiosEstado', function (RouteCollectorProxy $group){
     $group->put('[/cobrar]', \MesaController::class . ':CobrarPedido');
     $group->delete('[/cerrar]', \MesaController::class . ':CerrarMesa');
 })->add(\VerificadorCredenciales::class . ':VerificarToken')->add(\VerificadorParametros::class . ':VerificarParametrosCambiosEstadoMesas');
+
+//Encuesta de satisfaccion
+$app->group('/encuesta', function (RouteCollectorProxy $group){
+    $group->post('[/]', \MesaController::class . ':RealizarEncuesta'); //No lo llama???
+})->add(\VerificadorParametros::class . ':VerificarParametrosEncuesta');
 
 //----------------------------------------------------------
 

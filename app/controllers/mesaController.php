@@ -4,7 +4,6 @@ class MesaController
 {
     public function AltaMesa($request, $response, $args)
     {
-        
         $data = $request->getParsedBody();
         $dataJson = $data['mesa'];
         $mesa = json_decode($dataJson);
@@ -13,7 +12,7 @@ class MesaController
         $mesaAInsertar->id = $mesa->id;
         $mesaAInsertar->id_pedido = ""; 
         $mesaAInsertar->nombre_cliente = "";
-        $mesaAInsertar->estado = "libre";
+        $mesaAInsertar->estado = "cerrada";
         if(Mesa::Insertar($mesaAInsertar))
         {
             $payload = json_encode(array("Mensaje" => "La mesa fue dada de alta e insertada en la base de datos, se encuentra disponible para utilizar"));
@@ -129,7 +128,7 @@ class MesaController
         {
             if(Mesa::Cerrar($dataJson))
             {
-                $payload = json_encode(array("Mensaje" => "La mesa id: " . $dataJson->id . " fue cerrada"));
+                $payload = json_encode(array("Mensaje" => "La mesa id: " . $dataJson->id . " fue cerrada. La encuesta de satisfaccion esta habilitada en /encuesta)"));
                 $response = $response->withStatus(200);
             }
             else
@@ -149,6 +148,36 @@ class MesaController
         
         
         return $response;
+    }
+
+    public function RealizarEncuesta($request, $response, $args)
+    {
+        $data = $request->getParsedBody();
+      
+     
+        if(Pedido::EstaPago($data['id_pedido']))
+        {
+            
+            if(Mesa::GuardarEncuesta($data))
+            {
+                $payload = json_encode(array("Mensaje" => "Gracias por responder nuestra encuesta de satisfaccion"));
+                $response = $response->withStatus(200);
+            }
+            else
+            {
+                $payload = json_encode(array("Error" => "Hubo un problema al guardar la encuesta en la base de datos"));
+                $response = $response->withStatus(500);
+            }
+        }
+        else
+        {
+            $payload = json_encode(array("Mensaje" => "No esta habilitado a responder la encuesta, intentelo cuando la mesa del pedido ".$data['id_pedido']." este cerrada"));
+            $response = $response->withStatus(400);
+        }
+
+        $response->getBody()->write($payload);
+        return $response;
+
     }
 }
 

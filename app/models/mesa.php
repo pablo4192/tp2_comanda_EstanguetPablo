@@ -20,7 +20,7 @@ class Mesa
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
         $consulta = $accesoADatos->PrepararConsulta("INSERT INTO mesas (id,nombre_cliente,id_pedido,estado) VALUES (:id,:nombre_cliente,:id_pedido,:estado)");
 
-        $consulta->bindValue(":id", $mesa->id, PDO::PARAM_INT);
+        $consulta->bindValue(":id", $mesa->id, PDO::PARAM_STR);
         $consulta->bindValue(":nombre_cliente", $mesa->nombre_cliente, PDO::PARAM_STR);
         $consulta->bindValue(":id_pedido", $mesa->id_pedido, PDO::PARAM_INT);
         $consulta->bindValue(":estado", $mesa->estado, PDO::PARAM_STR);
@@ -74,7 +74,7 @@ class Mesa
         $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
         $consulta = $accesoADatos->PrepararConsulta("SELECT id,estado FROM mesas WHERE id = :id_mesa");
 
-        $consulta->bindValue(":id_mesa", $id_mesa, PDO::PARAM_INT);
+        $consulta->bindValue(":id_mesa", $id_mesa, PDO::PARAM_STR);
         $consulta->execute();
 
         $retorno = $consulta->fetch(PDO::FETCH_NUM);
@@ -128,6 +128,45 @@ class Mesa
             }
         }
         return false;
+    }
+
+    public static function ExisteId($id)
+    {
+        $listaMesas = self::Listar();
+
+        foreach($listaMesas as $m)
+        {
+            if($m->id == $id)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function GuardarEncuesta($data)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO encuestas (id_pedido,mesa,restaurant,mozo,cocinero,comentarios) VALUES (:id_pedido,:mesa,:restaurant,:mozo,:cocinero,:comentarios)");
+
+        $consulta->bindValue(":id_pedido", $data['id_pedido'], PDO::PARAM_STR);
+        $consulta->bindValue(":mesa", $data['mesa'], PDO::PARAM_INT);
+        $consulta->bindValue(":restaurant", $data['restaurant'], PDO::PARAM_INT);
+        $consulta->bindValue(":mozo", $data['mozo'], PDO::PARAM_INT);
+        $consulta->bindValue(":cocinero", $data['cocinero'], PDO::PARAM_INT);
+        $consulta->bindValue(":comentarios", $data['comentarios'], PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        $filasAfectadas = $consulta->rowCount();
+
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;
+
+
     }
         
 }

@@ -227,31 +227,36 @@ class PedidoController
 
         $pedido = Pedido::ListarPorIdPedidoYMesa($dataPedido->id_pedido, $dataPedido->id_mesa);
 
-        
-        if($pedido['hora_ingreso'] != "")
+        if($pedido)
         {
-            $minutosIngreso = intval(explode(":", $pedido['hora_ingreso'])[1]);
-            $minutosActuales = intval(date("i"));
-            $minutosPasados = $minutosActuales - $minutosIngreso;
-    
-            $minutosRestantes = intval($pedido['tiempo_estimado']) - $minutosPasados;
-    
-            if($minutosRestantes < 1)
+            if($pedido['hora_ingreso'] != "")
             {
-                $payload = json_encode(array("Mensaje" => "Disculpe las demoras, su pedido ya esta por salir. Han pasado " . $minutosPasados . " minutos"));
+                $minutosIngreso = intval(explode(":", $pedido['hora_ingreso'])[1]);
+                $minutosActuales = intval(date("i"));
+                $minutosPasados = $minutosActuales - $minutosIngreso;
+        
+                $minutosRestantes = intval($pedido['tiempo_estimado']) - $minutosPasados;
+        
+                if($minutosRestantes < 1)
+                {
+                    $payload = json_encode(array("Mensaje" => "Disculpe las demoras, su pedido ya esta por salir. Han pasado " . $minutosPasados . " minutos"));
+                }
+                else
+                {
+                    $payload = json_encode(array("Mensaje" => "Su pedido estara listo en aproximadamente " . $minutosRestantes . " minutos"));
+        
+                }
             }
             else
             {
-                $payload = json_encode(array("Mensaje" => "Su pedido estara listo en aproximadamente " . $minutosRestantes . " minutos"));
-    
+                $payload = json_encode(array("Mensaje" => "Disculpe las demoras su pedido todavia no ingreso a la cocina"));
             }
         }
         else
         {
-            $payload = json_encode(array("Mensaje" => "Disculpe las demoras su pedido todavia no ingreso a la cocina"));
+            $payload = json_encode(array("Error" => "No existe un pedido en el que coincidan el id_pedido: ".$dataPedido->id_pedido." con el id_mesa: ".$dataPedido->id_mesa));
         }
-
-
+        
         $response->getBody()->write($payload);
         $response = $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 

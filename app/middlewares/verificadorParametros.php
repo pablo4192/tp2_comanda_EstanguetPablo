@@ -392,15 +392,15 @@ class VerificadorParametros
             else
             {
                 $dataJson = $data['pedido'];
-                $pedido = json_decode($dataJson);
+                $pedido = json_decode(($dataJson));
         
+               
                 if(isset($pedido->productos) && isset($pedido->nombre_cliente) && isset($pedido->id_mesa))
                 {
                     if( self::ExisteProducto($pedido->productos) &&
                         ctype_alpha($pedido->nombre_cliente) && 
                         is_numeric($pedido->id_mozo) && 
-                        is_numeric($pedido->id_mesa) &&
-                        $pedido->id_mesa > 0)
+                        !is_numeric($pedido->id_mesa))
                     {
                         if(!Mesa::EstaDisponible($pedido->id_mesa))
                         {
@@ -408,6 +408,7 @@ class VerificadorParametros
                         }
                         else
                         {
+                            
                             if(!Usuario::EsMozo($pedido->id_mozo))
                             {
                                 $response->getBody()->write(json_encode(array("Acceso denegado" => "id_mozo no valido. No se encontro un mozo con el id ingresado")));
@@ -460,14 +461,21 @@ class VerificadorParametros
         
                 if(isset($mesa->id))
                 {
-                    if(is_numeric($mesa->id) && $mesa->id > 0) //hacer funcion para no repetir id_mesa
+                    if(!is_numeric($mesa->id) && strlen($mesa->id) == 5)
                     {
-                        $response = $handler->handle($request);
-                        $response->getBody()->write("<br>Parametros verificados, Metodo de consulta: " . $method);
+                        if(!Mesa::ExisteId($mesa->id))
+                        {
+                            $response = $handler->handle($request);
+                            $response->getBody()->write("<br>Parametros verificados, Metodo de consulta: " . $method);
+                        }
+                        else
+                        {
+                            $response->getBody()->write(json_encode(array("Error" => "Id repetido, el id de la mesa ya se encuentra en la base de datos")));
+                        }
                     }
                     else
                     {
-                        $response->getBody()->write(json_encode(array("Error" => "Verifique parametros, el id de la mesa debe ser mayor a 0")));
+                        $response->getBody()->write(json_encode(array("Error" => "Verifique parametros, el id de la mesa debe ser alfanumerico de 5 caracteres")));
                     }
                 }
                 else
@@ -1061,6 +1069,95 @@ class VerificadorParametros
 
     }
 
+    public static function VerificarParametrosTiempoEspera($request, $handler)
+    {
+        $data = $request->getParsedBody();
+        $method = $request->getMethod();
+        $response = new Response();
+
+        if(!isset($data))
+        {   
+            $response->getBody()->write(json_encode(array("Error" => "No ingreso ningun parametro")));
+            $response->withStatus(400);
+        }
+        else
+        {
+            if(array_key_exists("info", $data))
+            {
+                $dataJson = $data['info'];
+                $info = json_decode($dataJson);
+
+                if(isset($info->id_pedido) && isset($info->id_mesa))
+                {
+                    if(!is_numeric($info->id_pedido) && strlen($info->id_pedido) == 5 && !is_numeric($info->id_mesa) && strlen($info->id_mesa) == 5)
+                    {
+                        $response = $handler->handle($request);
+                        $response->getBody()->write(json_encode(array("Mensaje" => "Parametros verificados, metodo de consulta ".$method)));
+                        $response = $response->withStatus(200);
+                    }
+                    else
+                    {
+                        $response->getBody()->write(json_encode(array("Error" => "Verifique parametros, id_pedido y id_mesa deben ser alfanumericos de 5 caracteres")));
+                        $response = $response->withStatus(400);
+                    }
+                }
+                else
+                {
+                    $response->getBody()->write(json_encode(array("Error" => "Verifique parametros, debe ingreasr id_pedido y id_mesa para ver el tiempo de espera de su pedido")));
+                    $response = $response->withStatus(400);
+                }
+            }
+            else
+            {
+                $response->getBody()->write(json_encode(array("Error" => "No ingreso el parametro info")));
+                $response = $response->withStatus(400);
+            }
+        }
+        return $response;
+    }
+
+    public static function VerificarParametrosEncuesta($request, $handler)
+    {
+        $data = $request->getParsedBody();
+        $method = $request->getMethod();
+        $response = new Response();
+
+        if(!isset($data))
+        {   
+            $response->getBody()->write(json_encode(array("Error" => "No ingreso ningun parametro")));
+            $response = $response->withStatus(400);
+        }
+        else
+        {
+            if(array_key_exists("id_pedido", $data) && array_key_exists("mesa", $data) && array_key_exists("restaurant", $data) && array_key_exists("mozo", $data) && array_key_exists("cocinero", $data) && array_key_exists("comentarios", $data))
+            {
+                if(!is_numeric($data['id_pedido']) && $data['id_pedido'] != "" &&
+                   $data['mesa'] > 0 && $data['mesa'] < 11 &&
+                   $data['restaurant'] > 0 && $data['restaurant'] < 11 &&
+                   $data['mozo'] > 0 && $data['mozo'] < 11 &&
+                   $data['cocinero'] > 0 && $data['cocinero'] < 11 &&
+                   strlen($data['comentarios']) < 67)
+                {
+                    $response = $handler->handle($request);
+                    $response->getBody()->write(json_encode(array("Mensaje" => "Parametros verificados")));
+                    $response = $response->withStatus(200);
+                }
+                else
+                {
+                    $response->getBody()->write(json_encode(array("Error" => "Debe ingresar id_pedido. Las puntuaciones deben ser menores o iguales a 10 y el campo comentarios no debe sobrepasar los 66 caracteres")));
+                    $response = $response->withStatus(400);
+                }
+            }
+            else
+            {
+                $response->getBody()->write(json_encode(array("Error" => "Para completar la encuesta debe ingresar id_pedido; dar puntuacion a: mesa, restaurant, mozo, cocinero y completar un breve texto con su experiencia")));
+                $response = $response->withStatus(400);
+            }
+        }
+        return $response;
+
+
+    }
 }
 
 ?>

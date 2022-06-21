@@ -35,7 +35,7 @@ class Pedido
         $consulta->bindValue(":id", $pedido->id, PDO::PARAM_STR);
         $consulta->bindValue(":nombre_cliente", $pedido->nombre_cliente, PDO::PARAM_STR);
         $consulta->bindValue(":id_mozo", $pedido->id_mozo, PDO::PARAM_INT);
-        $consulta->bindValue(":id_mesa", $pedido->id_mesa, PDO::PARAM_INT);
+        $consulta->bindValue(":id_mesa", $pedido->id_mesa, PDO::PARAM_STR);
         $consulta->bindValue(":total", $pedido->total, PDO::PARAM_INT);
         $consulta->bindValue(":fecha", $pedido->fecha, PDO::PARAM_STR); //No me aparece en la base de datos la hora
         $consulta->bindValue(":estado", $pedido->estado, PDO::PARAM_STR);
@@ -535,6 +535,21 @@ class Pedido
 
         return $consulta->fetch(PDO::FETCH_ASSOC);
 
+    }
+
+    public static function EstaPago($id_pago)
+    {
+        $listaPedidosListos = self::ListarListos();
+
+        foreach($listaPedidosListos as $p)
+        {
+            //echo $p->medio_de_pago;
+            if($p->id == $id_pedido && trim($p->medio_de_pago) != "")
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

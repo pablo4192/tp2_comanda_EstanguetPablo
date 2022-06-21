@@ -227,10 +227,11 @@ class Usuario
 
         foreach($arrayDeUsuarios as $u)
         {
-            if($u->id == $id_mozo && $u->puesto == "mozo")
+            if($u->id == $id_mozo && trim($u->puesto) == "mozo")
             {
                 return true;
             }
+            
         }
         return false;
     }
