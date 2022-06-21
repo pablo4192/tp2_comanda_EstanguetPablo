@@ -537,14 +537,13 @@ class Pedido
 
     }
 
-    public static function EstaPago($id_pago)
+    public static function EstaPago($id_pedido)
     {
-        $listaPedidosListos = self::ListarListos();
+        $listaPedidosListos = self::Listar();
 
         foreach($listaPedidosListos as $p)
         {
-            //echo $p->medio_de_pago;
-            if($p->id == $id_pedido && trim($p->medio_de_pago) != "")
+            if($p->id == $id_pedido && $p->medio_de_pago != "")
             {
                 return true;
             }
