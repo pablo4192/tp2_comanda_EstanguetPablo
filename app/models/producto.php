@@ -19,7 +19,7 @@ class Producto
 
     public static function Listar()
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); //Cambiar por .env
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos");
 
         $consulta->execute();
@@ -30,7 +30,7 @@ class Producto
 
     public static function Existe($producto)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); //Cambiar por .env
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos WHERE id = :id");
 
         $consulta->bindValue(':id', $producto->id, PDO::PARAM_STR);
@@ -46,7 +46,7 @@ class Producto
 
     public static function InsertarDesdeCsv($producto)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("INSERT INTO productos (nombre,precio,stock,tipo,tiempo_preparacion,ingresado_por_id) VALUES (:nombre,:precio,:stock,:tipo,:tiempo_preparacion,:ingresado_por_id)");
         
         

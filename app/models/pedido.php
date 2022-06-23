@@ -25,7 +25,7 @@ class Pedido
    
     public static function Insertar($pedido)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("INSERT INTO pedidos (id,nombre_cliente,id_mozo,id_mesa,total,fecha,estado) VALUES (:id,:nombre_cliente,:id_mozo,:id_mesa,:total,:fecha,:estado)");
 
         $chars = '0123456789abcdefghijklmnopqrstuvwxyz';
@@ -54,7 +54,7 @@ class Pedido
 
     public static function InsertarDesdeCsv($pedido)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("INSERT INTO pedidos (id,nombre_cliente,id_mozo,id_mesa,total,fecha,tiempo_estimado,hora_ingreso,hora_egreso,estado,medio_de_pago) VALUES (:id,:nombre_cliente,:id_mozo,:id_mesa,:total,:fecha,:tiempo_estimado,:hora_ingreso,:hora_egreso,:estado,:medio_de_pago)");
         
         $chars = '0123456789abcdefghijklmnopqrstuvwxyz';
@@ -92,7 +92,7 @@ class Pedido
 
     public static function EliminarPedido($id_pedido)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("DELETE pedidos FROM pedidos WHERE id = :id_pedido");
 
         $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
@@ -115,7 +115,7 @@ class Pedido
    
     public static function ModificarPedido($pedido)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
 
         if(isset($pedido->nombre_cliente) && !isset($pedido->id_mesa))
         {
@@ -178,7 +178,7 @@ class Pedido
         $precios = array(); //Por si necesito el detalle de los precios, por ejemplo un ticket
         $total = 0;
 
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("SELECT precio FROM productos WHERE id = :id");
 
         for($i = 0; $i < count($productos); $i++)
@@ -203,7 +203,7 @@ class Pedido
     {
         $mayorTiempo = 0;
         
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("SELECT tiempo_preparacion FROM productos WHERE id = :id");
 
         for($i = 0; $i < count($productos); $i++)
@@ -237,7 +237,7 @@ class Pedido
 
     public static function Listar()
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); //Cambiar por .env
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM pedidos");
 
         $consulta->execute();
@@ -248,7 +248,7 @@ class Pedido
 
     public static function ListarProductosPendientesPreparacionXPuesto($puesto)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); 
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos_pedidos WHERE puesto_preparacion = :puesto AND estado = 'pendiente'");
 
         $consulta->bindValue(":puesto", $puesto, PDO::PARAM_STR);
@@ -260,7 +260,7 @@ class Pedido
 
     private static function Relacionar($producto, $puesto_preparacion, $id_pedido)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("INSERT INTO productos_pedidos (id_pedido,id_producto,puesto_preparacion,estado) VALUES (:id_pedido,:id_producto,:puesto_preparacion,'pendiente')");
 
         $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_STR);
@@ -273,7 +273,7 @@ class Pedido
 
     private static function EliminarRelaciones($id_pedido)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("DELETE productos_pedidos FROM productos_pedidos WHERE id_pedido = :id_pedido");
 
         $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
@@ -292,7 +292,7 @@ class Pedido
 
     private static function EliminarRelacionPedidoMesa($id_pedido)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET nombre_cliente = '',id_pedido = '',estado = 'libre' WHERE id_pedido = :id_pedido");
 
         $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
@@ -357,7 +357,7 @@ class Pedido
 
     public static function ListarProductosSegunEstado($id_pedido, $estado)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); 
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos_pedidos WHERE estado = :estado AND id_pedido = :id_pedido");
 
         $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
@@ -370,7 +370,7 @@ class Pedido
 
     public static function CambiarEstadoProducto_pedido($producto_pedido, $dataUsuario)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); 
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
         $consulta = $accesoADatos->PrepararConsulta("UPDATE productos_pedidos SET estado = :estado, id_encargado_preparacion = :id_encargado_preparacion WHERE id_pedido = :id_pedido AND puesto_preparacion = :puesto");
 
         $consulta->bindValue(":estado", $producto_pedido->estado, PDO::PARAM_STR);
@@ -421,7 +421,7 @@ class Pedido
 
     public static function CambiarEstadoPedido($producto_pedido, $hora)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); 
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
         $horaActual = date('H:i:s');
 
         switch($hora)
@@ -460,7 +460,7 @@ class Pedido
 
     public static function ListarProductosSegunIdPedidoYPuesto($id_pedido, $puesto)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); 
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos_pedidos WHERE puesto_preparacion = :puesto AND id_pedido = :id_pedido");
 
         $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
@@ -492,7 +492,7 @@ class Pedido
 
     public static function ListarListos()
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); //Cambiar por .env
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM pedidos WHERE estado = 'listo' AND medio_de_pago = ''");
 
         $consulta->execute();
@@ -503,7 +503,7 @@ class Pedido
 
     public static function CerrarPedido($dataPedido)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("UPDATE pedidos SET medio_de_pago = :medio_de_pago WHERE id_mesa = :id_mesa");
 
         $consulta->bindValue(":medio_de_pago", $dataPedido->medio_de_pago, PDO::PARAM_STR);
@@ -524,7 +524,7 @@ class Pedido
 
     public static function ListarPorIdPedidoYMesa($id_pedido, $id_mesa)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); //Cambiar por .env
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM pedidos WHERE id = :id_pedido AND id_mesa = :id_mesa");
 
         $consulta->bindValue("id_pedido", $id_pedido, PDO::PARAM_STR);

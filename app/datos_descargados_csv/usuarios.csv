@@ -1,3 +1,11 @@
-nombre;apellido;clave;puesto
-lorenzo;estevanez;1234;socio
-romualdo;medina;1234;mozo
+id;nombre;apellido;clave;puesto
+1;pedro;estevanez;1234;socio
+2;beto;lombardo;1234;cervecero
+4;mario;milonga;1234;mozo
+6;pablo;esta;1234;cocinero
+7;nancy;pazos;1234;bartender
+8;cesar;capaldo;1234;repostero
+9;lorenzo;estevanez;1234;socio
+
+10;romualdo;medina;1234;mozo
+

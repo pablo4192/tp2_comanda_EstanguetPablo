@@ -1,9 +1,43 @@
-nombre cliente;id mozo;id mesa;total;fecha;tiempo estimado;hora ingreso;hora egreso;estado;medio de pago
-valerio;4;1;3700;14/6/2022;;01:34:15;01:35:40;listo;efectivo
-gerardo;4;7;1120;15/6/2022;;02:40:18;02:42:55;listo;mp
-lucrecia;4;2;4000;17/6/2022;;01:22:25;01:27:01;listo;credito
-berta;4;8;3700;18/6/2022;;;;pendiente;
-cecilia;4;3;3700;19/6/2022;15;;;pendiente;
-mirko;4;2;3700;18/6/2022;15;;;pendiente;
-yanet;4;1;3700;19/6/2022;15;21:48:29;;en preparacion;
-betito;4;7;3700;20/6/2022;15;;;pendiente;
+id;nombre cliente;id mozo;id mesa;total;fecha;tiempo estimado;hora ingreso;hora egreso;estado;medio de pago
+10069;valerio;4;1;3700;2022-06-14;;01:34:15;01:35:40;listo;efectivo
+10070;gerardo;4;7;1120;2022-06-15;;02:40:18;02:42:55;listo;mp
+10071;lucrecia;4;2;4000;2022-06-17;;01:22:25;01:27:01;listo;credito
+10072;berta;4;8;3700;2022-06-18;;;;pendiente;
+10077;cecilia;4;3;3700;2022-06-19;15;;;pendiente;
+1m60h;mirko;4;2;3700;2022-06-18;15;;;pendiente;
+2q93r;yanet;4;1;3700;2022-06-19;15;21:48:29;;en preparacion;
+3lto0;mirko;4;2;3700;0000-00-00;15;;;pendiente;
+
+3ovuw;gerardo;4;7;1120;0000-00-00;;02:40:18;02:42:55;listo;mp
+
+3vypj;gerardo;4;7;1120;0000-00-00;;02:40:18;02:42:55;listo;mp
+
+6rmb3;berta;4;8;3700;0000-00-00;;;;pendiente;
+
+7bo2t;berta;4;8;3700;0000-00-00;;;;pendiente;
+
+8decp;betito;4;7;3700;0000-00-00;15;;;pendiente;
+
+8hkma;cecilia;4;3;3700;0000-00-00;15;;;pendiente;
+
+a6t2q;valerio;4;1;3700;0000-00-00;15;01:34:15;01:35:40;listo;efectivo
+
+ade5k;pepe;10;4ku96;3700;2022-06-21;15;;;pendiente;
+eaxn1;lucrecia;4;2;4000;0000-00-00;15;01:22:25;01:27:01;listo;credito
+
+foe0g;yanet;4;1;3700;0000-00-00;15;21:48:29;;en preparacion;
+
+g2k5d;betito;4;7;3700;0000-00-00;15;;;pendiente;
+
+inmur;lucrecia;4;2;4000;0000-00-00;15;01:22:25;01:27:01;listo;credito
+
+j2o34;lucho;4;lf7ty;3700;2022-06-21;15;;;pendiente;
+k21me;betito;4;7;3700;2022-06-20;15;;;pendiente;
+r0ypx;valerio;4;1;3700;0000-00-00;15;01:34:15;01:35:40;listo;efectivo
+
+uq8j0;yanet;4;1;3700;0000-00-00;15;21:48:29;;en preparacion;
+
+wiqry;cecilia;4;3;3700;0000-00-00;15;;;pendiente;
+
+xf2iw;mirko;4;2;3700;0000-00-00;15;;;pendiente;
+

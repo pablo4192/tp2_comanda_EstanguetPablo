@@ -13,11 +13,9 @@ class Mesa
        
     }
 
-    //Metodos
-    //.Ver estado del pedido
     public static function Insertar($mesa)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("INSERT INTO mesas (id,nombre_cliente,id_pedido,estado) VALUES (:id,:nombre_cliente,:id_pedido,:estado)");
 
         $consulta->bindValue(":id", $mesa->id, PDO::PARAM_STR);
@@ -30,7 +28,7 @@ class Mesa
 
     public static function EliminarMesa($id_mesa)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("DELETE mesas FROM mesas WHERE id = :id_mesa");
 
         $consulta->bindValue(":id_mesa", $id_mesa, PDO::PARAM_INT);
@@ -48,7 +46,7 @@ class Mesa
 
     public static function OcuparMesa($pedido) 
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET estado = 'cliente esperando el pedido', id_pedido = :id_pedido, nombre_cliente = :nombre_cliente WHERE id = :id_mesa");
 
         $consulta->bindValue(':id_mesa', $pedido->id_mesa, PDO::PARAM_INT);
@@ -60,7 +58,7 @@ class Mesa
 
     public static function Listar()
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda"); //Cambiar por .env
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM mesas");
 
         $consulta->execute();
@@ -71,7 +69,7 @@ class Mesa
 
     public static function EstaDisponible($id_mesa)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("SELECT id,estado FROM mesas WHERE id = :id_mesa");
 
         $consulta->bindValue(":id_mesa", $id_mesa, PDO::PARAM_STR);
@@ -91,7 +89,7 @@ class Mesa
 
     public static function CambiarEstado($id_mesa, $estado)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET estado = :estado WHERE id = :id_mesa");
 
         $consulta->bindValue(":estado", $estado, PDO::PARAM_STR);
@@ -111,7 +109,7 @@ class Mesa
 
     public static function Cerrar($data)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET estado = 'cerrada',nombre_cliente = '',id_pedido = '' WHERE id = :id_mesa"); 
 
         $consulta->bindValue(":id_mesa", $data->id, PDO::PARAM_INT);
@@ -146,7 +144,7 @@ class Mesa
 
     public static function GuardarEncuesta($data)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("INSERT INTO encuestas (id_pedido,mesa,restaurant,mozo,cocinero,comentarios) VALUES (:id_pedido,:mesa,:restaurant,:mozo,:cocinero,:comentarios)");
 
         $consulta->bindValue(":id_pedido", $data['id_pedido'], PDO::PARAM_STR);

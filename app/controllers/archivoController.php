@@ -33,17 +33,16 @@ class ArchivoController
 
         if($manejador->DescargarEnCsv($lista))
         {
-            $payload = json_encode(array("Mensaje" => "Los datos fueron descargados en la carpeta: datos_descargados_csv"));
+            //$payload = json_encode(array("Mensaje" => "Los datos fueron descargados en la carpeta: datos_descargados_csv"));
             $response = $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         }
         else
         {
-            $payload = json_encode(array("Error" => "Hubo un problema al guardar en csv"));
+            //$payload = json_encode(array("Error" => "Hubo un problema al guardar en csv"));
             $response = $response->withStatus(500);
         }
-        $response->getBody()->write($payload);
+        //$response->getBody()->write($payload);
         
-
         return $response;
     }
 

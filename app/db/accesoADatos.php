@@ -5,11 +5,11 @@ class AccesoADatos
     private static $objetoAccesoADatos;
     private $objetoPdo;
 
-    private function __construct($nombreDB)
+    private function __construct()
     {
         try
         {
-            $this->objetoPdo = new PDO("mysql:host=localhost;dbname=" . $nombreDB, "root");
+            $this->objetoPdo = new PDO("mysql:host=localhost;dbname=tp2_comanda", "root");
         }
         catch(PDOException $ex)
         {
@@ -18,11 +18,11 @@ class AccesoADatos
         }
     }
 
-    public static function RetornarAccesoADatos($nombreDB)
+    public static function RetornarAccesoADatos()
     {
         if(!isset(self::$objetoAccesoADatos))
         {
-            self::$objetoAccesoADatos = new AccesoADatos($nombreDB);
+            self::$objetoAccesoADatos = new AccesoADatos();
         }
         return self::$objetoAccesoADatos;
     }

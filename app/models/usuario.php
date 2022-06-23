@@ -18,7 +18,7 @@ class Usuario
     
     public static function InsertarProducto($producto, $ingresado_por_id)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("INSERT INTO productos (nombre,precio,stock,tipo,tiempo_preparacion,ingresado_por_id) VALUES (:nombre,:precio,:stock,:tipo,:tiempo_preparacion,:ingresado_por_id)");
 
         $consulta->bindValue(":nombre", $producto->nombre, PDO::PARAM_STR);
@@ -33,7 +33,7 @@ class Usuario
 
     public static function Insertar($usuario)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("INSERT INTO usuarios (nombre,apellido,clave,puesto) VALUES (:nombre,:apellido,:clave,:puesto)");
 
         $consulta->bindValue(":nombre", $usuario->nombre, PDO::PARAM_STR);
@@ -54,7 +54,7 @@ class Usuario
 
     public static function InsertarDesdeCsv($usuario)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("INSERT INTO usuarios (nombre,apellido,clave,puesto) VALUES (:nombre,:apellido,:clave,:puesto)");
         
      
@@ -81,7 +81,7 @@ class Usuario
 
     public static function EliminarProducto($id_producto)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("DELETE productos FROM productos WHERE id = :id_producto");
 
         $consulta->bindValue(":id_producto", $id_producto, PDO::PARAM_INT);
@@ -99,7 +99,7 @@ class Usuario
 
     public static function ModificarProducto($producto)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
 
         if(isset($producto->nombre))
         {
@@ -142,7 +142,7 @@ class Usuario
 
     public static function ModificarUsuario($usuario)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
 
         
         if(isset($usuario->nombre))
@@ -181,7 +181,7 @@ class Usuario
 
     public static function EliminarUsuario($id_usuario)
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("DELETE usuarios FROM usuarios WHERE id = :id_usuario");
 
         $consulta->bindValue(":id_usuario", $id_usuario, PDO::PARAM_INT);
@@ -199,7 +199,7 @@ class Usuario
 
     public static function Listar()
     {
-        $accesoADatos = AccesoADatos::RetornarAccesoADatos("tp2_comanda");
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM usuarios");
 
         $consulta->execute();

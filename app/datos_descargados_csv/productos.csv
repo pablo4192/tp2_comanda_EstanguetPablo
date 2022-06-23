@@ -1,5 +1,14 @@
-nombre;precio;stock;tipo;tiempo preparacion;ingresado por id
-tarta;800;20;cocinero;10;1
-vino;500;10;bartender;3;1
-fernet;700;30;bartender;5;1
-quilmes;120;35;cervecero;3;1
+id;nombre;precio;stock;tipo;tiempo preparacion;ingresado por id
+1;milanesa;800;20;cocinero;10;1
+2;fideos;500;10;cocinero;10;1
+4;papas fritas;400;30;cocinero;15;1
+6;empanada;120;35;cocinero;8;1
+7;raviolesVerdura;900;18;cocinero;15;1
+8;patagoniaAmber;500;30;cervecero;2;1
+9;torta;600;56;repostero;25;1
+10;helado;600;20;repostero;10;1
+11;tiramisu;600;20;repostero;10;1
+12;tarta;800;20;cocinero;10;1
+13;vino;500;10;bartender;3;1
+14;fernet;700;30;bartender;5;1
+15;quilmes;120;35;cervecero;3;1

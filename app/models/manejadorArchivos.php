@@ -35,6 +35,10 @@ class ManejadorArchivos
                 {
                     $retorno = fwrite($archivo, "$p->id;$p->nombre_cliente;$p->id_mozo;$p->id_mesa;$p->total;$p->fecha;$p->tiempo_estimado;$p->hora_ingreso;$p->hora_egreso;$p->estado;$p->medio_de_pago".PHP_EOL);
                 }
+                
+                header('Content-Type: application/csv');
+                header('Content-Disposition: attachment; filename=pedidos.csv');
+                readfile("./datos_descargados_csv/pedidos.csv");
                 break;
                 case "productos.csv":
                     $this->ruta = "datos_descargados_csv/productos.csv";
@@ -46,6 +50,9 @@ class ManejadorArchivos
                     {
                         $retorno = fwrite($archivo, "$p->id;$p->nombre;$p->precio;$p->stock;$p->tipo;$p->tiempo_preparacion;$p->ingresado_por_id".PHP_EOL);
                     }
+                    header('Content-Type: application/csv');
+                    header('Content-Disposition: attachment; filename=productos.csv');
+                    readfile("./datos_descargados_csv/productos.csv");
                     break;
                     case "usuarios.csv":
                         $this->ruta = "datos_descargados_csv/usuarios.csv";
@@ -57,6 +64,9 @@ class ManejadorArchivos
                         {
                             $retorno = fwrite($archivo, "$u->id;$u->nombre;$u->apellido;$u->clave;$u->puesto".PHP_EOL);
                         }
+                        header('Content-Type: application/csv');
+                        header('Content-Disposition: attachment; filename=usuarios.csv');
+                        readfile("./datos_descargados_csv/usuarios.csv");
                         break;
         }
         fclose($archivo);
