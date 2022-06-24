@@ -22,7 +22,6 @@ class Pedido
         
     }
 
-   
     public static function Insertar($pedido)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos();
@@ -476,17 +475,21 @@ class Pedido
         $arrayProductos = self::ListarProductosSegunIdPedidoYPuesto($producto_pedido->id_pedido, $puesto);
         $retorno = false;
 
-        $estado = $arrayProductos[0]['estado'];
-        
+        if(count($arrayProductos) > 0)
+        {
+            $estado = $arrayProductos[0]['estado'];
+            
+            if($estado == "pendiente" && $producto_pedido->estado == "en preparacion")
+            {
+                $retorno = true;
+            }
+            else if($estado == "en preparacion" && $producto_pedido->estado == "listo")
+            {
+                $retorno = true;
+            }
 
-        if($estado == "pendiente" && $producto_pedido->estado == "en preparacion")
-        {
-            $retorno = true;
         }
-        else if($estado == "en preparacion" && $producto_pedido->estado == "listo")
-        {
-            $retorno = true;
-        }
+        
         return $retorno;
     }
 

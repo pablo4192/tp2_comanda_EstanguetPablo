@@ -219,7 +219,7 @@ class PedidoController
         return $response;
     }
 
-    public function RetornarTiempoDeEspera($request, $response, $args)  //VALIDAR PARAMETROS
+    public function RetornarTiempoDeEspera($request, $response, $args)  
     {
         $data = $request->getParsedBody();   
         $dataJson = $data['info'];

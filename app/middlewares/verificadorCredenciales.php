@@ -33,7 +33,6 @@ class VerificadorCredenciales
         return $response;
     }
 
-
     public static function VerificarToken($request, $handler)
     {
         $header = $request->getHeaderLine('Authorization');
