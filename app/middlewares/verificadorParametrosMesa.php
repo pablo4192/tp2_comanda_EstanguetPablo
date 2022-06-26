@@ -241,9 +241,10 @@ class VerificadorParametrosMesa
         }
         else
         {
-            if(array_key_exists("id_pedido", $data) && array_key_exists("mesa", $data) && array_key_exists("restaurant", $data) && array_key_exists("mozo", $data) && array_key_exists("cocinero", $data) && array_key_exists("comentarios", $data))
+            if(array_key_exists("id_pedido", $data) && array_key_exists("id_mesa", $data)  && array_key_exists("mesa", $data) && array_key_exists("restaurant", $data) && array_key_exists("mozo", $data) && array_key_exists("cocinero", $data) && array_key_exists("comentarios", $data))
             {
                 if(!is_numeric($data['id_pedido']) && $data['id_pedido'] != "" &&
+                   !is_numeric($data['id_mesa']) && $data['id_mesa'] != "" &&
                    $data['mesa'] > 0 && $data['mesa'] < 11 &&
                    $data['restaurant'] > 0 && $data['restaurant'] < 11 &&
                    $data['mozo'] > 0 && $data['mozo'] < 11 &&
@@ -256,13 +257,13 @@ class VerificadorParametrosMesa
                 }
                 else
                 {
-                    $response->getBody()->write(json_encode(array("Error" => "Debe ingresar id_pedido. Las puntuaciones deben ser menores o iguales a 10 y el campo comentarios no debe sobrepasar los 66 caracteres")));
+                    $response->getBody()->write(json_encode(array("Error" => "Debe ingresar id_pedido y id_mesa. Las puntuaciones deben ser menores o iguales a 10 y el campo comentarios no debe sobrepasar los 66 caracteres")));
                     $response = $response->withStatus(400);
                 }
             }
             else
             {
-                $response->getBody()->write(json_encode(array("Error" => "Para completar la encuesta debe ingresar id_pedido; dar puntuacion a: mesa, restaurant, mozo, cocinero y completar un breve texto con su experiencia")));
+                $response->getBody()->write(json_encode(array("Error" => "Para completar la encuesta debe ingresar id_pedido, id_mesa; dar puntuacion a: mesa, restaurant, mozo, cocinero y completar un breve texto con su experiencia")));
                 $response = $response->withStatus(400);
             }
         }

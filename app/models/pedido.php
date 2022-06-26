@@ -36,7 +36,7 @@ class Pedido
         $consulta->bindValue(":id_mozo", $pedido->id_mozo, PDO::PARAM_INT);
         $consulta->bindValue(":id_mesa", $pedido->id_mesa, PDO::PARAM_STR);
         $consulta->bindValue(":total", $pedido->total, PDO::PARAM_INT);
-        $consulta->bindValue(":fecha", $pedido->fecha, PDO::PARAM_STR); //No me aparece en la base de datos la hora
+        $consulta->bindValue(":fecha", $pedido->fecha, PDO::PARAM_STR); 
         $consulta->bindValue(":estado", $pedido->estado, PDO::PARAM_STR);
 
         $consulta->execute();
@@ -198,7 +198,7 @@ class Pedido
         return $total;
     }
 
-    public static function InsertarTiempoEstimadoPreparacion($productos, $id_pedido)
+    public static function InsertarTiempoEstimadoPreparacion($productos, $id_pedido) 
     {
         $mayorTiempo = 0;
         
@@ -207,7 +207,7 @@ class Pedido
 
         for($i = 0; $i < count($productos); $i++)
         {
-            $consulta->bindValue(':id', $productos[$i]->id, PDO::PARAM_INT);
+            $consulta->bindValue(':id', $productos[$i]['id_producto'], PDO::PARAM_STR);
             $consulta->execute();
 
             $tiempo_preparacion = $consulta->fetch(PDO::FETCH_ASSOC);
@@ -220,7 +220,7 @@ class Pedido
         }
 
         $consulta = $accesoADatos->PrepararConsulta("UPDATE pedidos SET tiempo_estimado = :mayorTiempo WHERE id = :id");
-        $consulta->bindValue(":id", $id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":id", $id_pedido, PDO::PARAM_STR);
         $consulta->bindValue(":mayorTiempo", $mayorTiempo, PDO::PARAM_INT);
 
         $consulta->execute();
@@ -340,7 +340,7 @@ class Pedido
         return null;
     }
 
-    private static function Existe($id)
+    public static function Existe($id)
     {
         $arrayPedidos = self::Listar();
         
@@ -373,7 +373,7 @@ class Pedido
         $consulta = $accesoADatos->PrepararConsulta("UPDATE productos_pedidos SET estado = :estado, id_encargado_preparacion = :id_encargado_preparacion WHERE id_pedido = :id_pedido AND puesto_preparacion = :puesto");
 
         $consulta->bindValue(":estado", $producto_pedido->estado, PDO::PARAM_STR);
-        $consulta->bindValue(":id_pedido", $producto_pedido->id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":id_pedido", $producto_pedido->id_pedido, PDO::PARAM_STR);
         $consulta->bindValue(":id_encargado_preparacion", $dataUsuario->id, PDO::PARAM_INT);
         $consulta->bindValue(":puesto", $dataUsuario->puesto, PDO::PARAM_STR);
 
@@ -399,13 +399,17 @@ class Pedido
                     if($p->id == $producto_pedido->id_pedido)
                     {
                         $horaIngreso = $p->hora_ingreso;
+                        $productos = self::ListarIdProductosSegunIdPedido($producto_pedido->id_pedido);
                         break;
                     }
                 }
                 
                 if($horaIngreso == "")
                 {
-                    self::CambiarEstadoPedido($producto_pedido, "hora_ingreso");
+                    if(self::CambiarEstadoPedido($producto_pedido, "hora_ingreso"))
+                    {
+                        self::InsertarTiempoEstimadoPreparacion($productos, $producto_pedido->id_pedido);
+                    }
                 }
                 else
                 {
@@ -426,23 +430,23 @@ class Pedido
         switch($hora)
         {
             case "hora_ingreso":
-                var_dump($horaActual);
+                
                 $consulta = $accesoADatos->PrepararConsulta("UPDATE pedidos SET estado = :estado, hora_ingreso = :hora_ingreso WHERE id = :id_pedido");
                 $consulta->bindValue(":hora_ingreso", $horaActual, PDO::PARAM_STR);
                 break;
                 case "hora_egreso":
-                    var_dump($horaActual);
+                   
                     $consulta = $accesoADatos->PrepararConsulta("UPDATE pedidos SET estado = :estado, hora_egreso = :hora_egreso WHERE id = :id_pedido");
                     $consulta->bindValue(":hora_egreso", $horaActual, PDO::PARAM_STR);
                     break;
                     default:
-                    var_dump($horaActual);
+                    
                     $consulta = $accesoADatos->PrepararConsulta("UPDATE pedidos SET estado = :estado WHERE id = :id_pedido");
                     break;
         }
         
 
-        $consulta->bindValue(":id_pedido", $producto_pedido->id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":id_pedido", $producto_pedido->id_pedido, PDO::PARAM_STR);
         $consulta->bindValue(":estado", $producto_pedido->estado, PDO::PARAM_STR);
         
         $consulta->execute();
@@ -464,6 +468,19 @@ class Pedido
 
         $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
         $consulta->bindValue(":puesto", $puesto, PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function ListarIdProductosSegunIdPedido($id_pedido)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
+        $consulta = $accesoADatos->PrepararConsulta("SELECT id_producto FROM productos_pedidos WHERE id_pedido = :id_pedido");
+
+        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_STR);
+       
 
         $consulta->execute();
 

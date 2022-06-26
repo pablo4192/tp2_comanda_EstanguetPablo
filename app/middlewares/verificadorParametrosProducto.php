@@ -253,7 +253,7 @@ class VerificadorParametrosProducto
         return $response;
     }
 
-    private static function ExisteProducto($productos)
+    public static function ExisteProducto($productos)
     {
         for($i = 0; $i < count($productos); $i++)
         {

@@ -49,7 +49,7 @@ class Mesa
         $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET estado = 'cliente esperando el pedido', id_pedido = :id_pedido, nombre_cliente = :nombre_cliente WHERE id = :id_mesa");
 
-        $consulta->bindValue(':id_mesa', $pedido->id_mesa, PDO::PARAM_INT);
+        $consulta->bindValue(':id_mesa', $pedido->id_mesa, PDO::PARAM_STR);
         $consulta->bindValue(':id_pedido', $pedido->id, PDO::PARAM_STR);
         $consulta->bindValue(':nombre_cliente', $pedido->nombre_cliente, PDO::PARAM_STR);
 
@@ -145,9 +145,10 @@ class Mesa
     public static function GuardarEncuesta($data)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos();
-        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO encuestas (id_pedido,mesa,restaurant,mozo,cocinero,comentarios) VALUES (:id_pedido,:mesa,:restaurant,:mozo,:cocinero,:comentarios)");
+        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO encuestas (id_pedido,id_mesa,mesa,restaurant,mozo,cocinero,comentarios) VALUES (:id_pedido,:id_mesa,:mesa,:restaurant,:mozo,:cocinero,:comentarios)");
 
         $consulta->bindValue(":id_pedido", $data['id_pedido'], PDO::PARAM_STR);
+        $consulta->bindValue(":id_mesa", $data['id_mesa'], PDO::PARAM_STR);
         $consulta->bindValue(":mesa", $data['mesa'], PDO::PARAM_INT);
         $consulta->bindValue(":restaurant", $data['restaurant'], PDO::PARAM_INT);
         $consulta->bindValue(":mozo", $data['mozo'], PDO::PARAM_INT);

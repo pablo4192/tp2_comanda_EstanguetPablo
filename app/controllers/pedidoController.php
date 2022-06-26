@@ -33,8 +33,6 @@ class PedidoController
                 $response->getBody()->write($mensajeImagen."/ ");
             }
 
-            Pedido::InsertarTiempoEstimadoPreparacion($pedido->productos, $pedidoAInsertar->id);
-
             Mesa::OcuparMesa($pedidoAInsertar); 
 
             Pedido::RelacionarProductosPedidos($pedido->productos,$pedidoAInsertar->id);
@@ -231,21 +229,43 @@ class PedidoController
         {
             if($pedido['hora_ingreso'] != "")
             {
-                $minutosIngreso = intval(explode(":", $pedido['hora_ingreso'])[1]);
-                $minutosActuales = intval(date("i"));
-                $minutosPasados = $minutosActuales - $minutosIngreso;
-        
-                $minutosRestantes = intval($pedido['tiempo_estimado']) - $minutosPasados;
-        
-                if($minutosRestantes < 1)
+                $horaIngreso = intval(explode(":", $pedido['hora_ingreso'])[0]);
+                $minutosIngreso = intval(explode(":", $pedido['hora_ingreso'])[1]); 
+                
+                $horaActual = intval(date("H"));
+                $minutosActuales = intval(date("i"));   
+
+                if($horaActual > $horaIngreso && $minutosActuales >= $minutosIngreso)
                 {
-                    $payload = json_encode(array("Mensaje" => "Disculpe las demoras, su pedido ya esta por salir. Han pasado " . $minutosPasados . " minutos"));
+                    $payload = json_encode(array("Mensaje" => "Disculpe las demoras, su pedido ya esta por salir. Ha pasado mas de 1 hora"));
                 }
                 else
                 {
-                    $payload = json_encode(array("Mensaje" => "Su pedido estara listo en aproximadamente " . $minutosRestantes . " minutos"));
-        
+                    if($minutosIngreso > $minutosActuales)
+                    {
+                        $minutosAux = $minutosIngreso - $minutosActuales; // 59 - 25 = 34
+                        $minutosPasados = 60 - $minutosAux; // 60 - 34 = 26 minutos pasados
+                    }
+                    else if($minutosIngreso < $minutosActuales)
+                    {
+                        $minutosPasados = $minutosActuales - $minutosIngreso; //59 - 25 = 34 minutos pasados
+                    }
+    
+                    $minutosRestantes = $pedido['tiempo_estimado'] - $minutosPasados;
+                    
+                    if($minutosRestantes < 0)
+                    {
+                        $payload = json_encode(array("Mensaje" => "Disculpe las demoras, su pedido ya esta por salir. Han pasado " . $minutosPasados . " minutos"));
+                    }
+                    else
+                    {
+                        $payload = json_encode(array("Mensaje" => "Su pedido estara listo en aproximadamente " . $minutosRestantes . " minutos"));
+            
+                    }
+
                 }
+
+
             }
             else
             {

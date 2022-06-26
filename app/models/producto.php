@@ -12,7 +12,7 @@ class Producto
     public $ingresado_por_id;
    
 
-    public function __construct() //Constructor vacio para fetch
+    public function __construct()
     {
         
     }

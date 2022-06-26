@@ -32,7 +32,7 @@ class VerificadorParametrosPedido
                
                 if(isset($pedido->productos) && isset($pedido->nombre_cliente) && isset($pedido->id_mesa))
                 {
-                    if( self::ExisteProducto($pedido->productos) &&
+                    if(VerificadorParametrosProducto::ExisteProducto($pedido->productos) &&
                         ctype_alpha($pedido->nombre_cliente) && 
                         is_numeric($pedido->id_mozo) && 
                         !is_numeric($pedido->id_mesa))
@@ -260,15 +260,23 @@ class VerificadorParametrosPedido
                 {
                     $dataToken = Jwtoken::Verificar($token);
                     
-                    if(Pedido::VerificarEstadoEnDB($producto, $dataToken->puesto))
+                    if(Pedido::Existe($producto->id_pedido))
                     {
-                        $response = $handler->handle($request);
-                        $response->getBody()->write("<br>Parametros verificados, Metodo de consulta: " . $method);
+                        if(Pedido::VerificarEstadoEnDB($producto, $dataToken->puesto))
+                        {
+                            $response = $handler->handle($request);
+                            $response->getBody()->write("<br>Parametros verificados, Metodo de consulta: " . $method);
+                        }
+                        else
+                        {
+                            $response->getBody()->write(json_encode(array("Error" => "Accion invalida en cambios de estado del pedido, esta pasando por alto un estado")));
+                        }
                     }
                     else
                     {
-                        $response->getBody()->write(json_encode(array("Error" => "Accion invalida en cambios de estado del pedido, esta pasando por alto un estado")));
-                    }
+                        $response->getBody()->write(json_encode(array("Error" => "El id_pedido ingresado no se encuentra en la base de datos")));
+                    }     
+
                 }
                 else
                 {

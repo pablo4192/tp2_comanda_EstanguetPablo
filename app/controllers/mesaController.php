@@ -171,7 +171,7 @@ class MesaController
         }
         else
         {
-            $payload = json_encode(array("Mensaje" => "No esta habilitado a responder la encuesta, intentelo cuando la mesa del pedido ".$data['id_pedido']." este cerrada"));
+            $payload = json_encode(array("Mensaje" => "No esta habilitado a responder la encuesta, intentelo cuando la mesa ".$data['id_mesa']." del pedido ".$data['id_pedido']." este cerrada"));
             $response = $response->withStatus(400);
         }
 
