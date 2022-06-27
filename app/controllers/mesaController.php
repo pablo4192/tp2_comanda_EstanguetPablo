@@ -7,6 +7,19 @@ class MesaController
         $data = $request->getParsedBody();
         $dataJson = $data['mesa'];
         $mesa = json_decode($dataJson);
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
         
         $mesaAInsertar = new Mesa();
         $mesaAInsertar->id = $mesa->id;
@@ -15,6 +28,8 @@ class MesaController
         $mesaAInsertar->estado = "cerrada";
         if(Mesa::Insertar($mesaAInsertar))
         {
+            Usuario::RegistrarOperacion($dataToken, "alta mesa");
+
             $payload = json_encode(array("Mensaje" => "La mesa fue dada de alta e insertada en la base de datos, se encuentra disponible para utilizar"));
             $response = $response->withStatus(200);
         }
@@ -35,8 +50,23 @@ class MesaController
         $data = $request->getParsedBody();
         $id_bajaMesa = $data['id_mesa'];
 
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         if(Mesa::EliminarMesa($id_bajaMesa))
         {
+            Usuario::RegistrarOperacion($dataToken, "baja mesa");
+
             $payload = json_encode(array("Mensaje" => "La mesa a sido eliminada de la base de datos"));
             $response = $response->withStatus(200);
         }
@@ -53,7 +83,22 @@ class MesaController
 
     public function ListarMesas($request, $response, $args)
     {
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         $lista = Mesa::Listar();
+
+        Usuario::RegistrarOperacion($dataToken, "listado mesas");
 
         $payload = json_encode(array("listaMesas" => $lista));
 
@@ -68,8 +113,23 @@ class MesaController
     {
         $data = $request->getParsedBody();
 
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         if(Mesa::CambiarEstado($data['entregar'], "cliente comiendo"))
         {
+            Usuario::RegistrarOperacion($dataToken, "entrega pedido");
+
             $payload = json_encode(array("Mensaje" => "A la mesa id: " . $data['entregar'] . " Se le cambio el estado a 'cliente comiendo'"));
             $response = $response->withStatus(200);
         }
@@ -89,8 +149,23 @@ class MesaController
     {
         $data = $request->getParsedBody();
 
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         if(Mesa::CambiarEstado($data['cobrar'], "cliente pagando"))
         {
+            Usuario::RegistrarOperacion($dataToken, "cobro pedido");
+
             $payload = json_encode(array("Mensaje" => "A la mesa id: " . $data['cobrar'] . " Se le cambio el estado a 'cliente pagando'"));
             $response = $response->withStatus(200);
         }
@@ -128,6 +203,8 @@ class MesaController
         {
             if(Mesa::Cerrar($dataJson))
             {
+                Usuario::RegistrarOperacion($dataToken, "cerrar mesa");
+
                 $payload = json_encode(array("Mensaje" => "La mesa id: " . $dataJson->id . " fue cerrada. La encuesta de satisfaccion esta habilitada en /encuesta)"));
                 $response = $response->withStatus(200);
             }

@@ -24,8 +24,10 @@ class VerificadorCredenciales
         }
         else
         {
+            $dataUsuario = Usuario::RetornarDatosUsuario($usuario->id);
+
             $response = $handler->handle($request); 
-            $payload = json_encode(array("Bienvenido" => $usuario->id));
+            $payload = json_encode(array("Bienvenido" => $dataUsuario['nombre']));
         }
         
         $response->getBody()->write($payload);
@@ -78,13 +80,14 @@ class VerificadorCredenciales
     {
         $retorno;
 
-        switch($puesto)
+        
+        switch(trim($puesto))
         {
             case "socio":
-                $retorno = true;
+                $retorno = true;    
                 break;
                 case "mozo":
-                    if($ruta == "/pedidos" || $ruta == "/pedidos/baja" || $ruta == "/pedidos/modificacion" || $ruta == "/pedidos/listos" || $ruta == "/mesas/cambiosEstado")
+                    if($ruta == "/pedidos" || $ruta == "/pedidos/baja" || $ruta == "/pedidos/modificacion" || $ruta == "/pedidos/listos" || $ruta == "/mesas/cambiosEstado" || $ruta == "/pedidos/cancelar")
                     {
                         $retorno = true;
                     }

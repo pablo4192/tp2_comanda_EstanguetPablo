@@ -22,10 +22,12 @@ class Producto
         $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos");
 
-        $consulta->execute();
-
-        return $consulta->fetchAll(PDO::FETCH_CLASS, "Producto");
-
+        if($consulta->execute())
+        {
+            
+            return $consulta->fetchAll(PDO::FETCH_CLASS, "Producto");
+        }
+        return null;
     }
 
     public static function Existe($producto)

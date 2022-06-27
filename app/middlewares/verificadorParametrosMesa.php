@@ -90,7 +90,7 @@ class VerificadorParametrosMesa
             {
                 if($data['id_mesa'] != null)
                 {
-                    if(is_numeric($data['id_mesa']) && $data['id_mesa'] > 0)
+                    if(!is_numeric($data['id_mesa']) && $data['id_mesa'] != "")
                     {
                         $dataToken = Jwtoken::Verificar($token);
 
@@ -107,7 +107,7 @@ class VerificadorParametrosMesa
                     }
                     else
                     {
-                        $response->getBody()->write(json_encode(array("Error" => "El id debe ser numerico")));
+                        $response->getBody()->write(json_encode(array("Error" => "El id debe ser alfanumerico de 5 caracteres")));
                     }
                 }
                 else

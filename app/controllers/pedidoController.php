@@ -22,6 +22,19 @@ class PedidoController
         $pedidoAInsertar->total = Pedido::CalcularTotal($pedido->productos);
         $pedidoAInsertar->fecha = date("y-m-d");  
         $pedidoAInsertar->estado = "pendiente";
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
         
         if(Pedido::Insertar($pedidoAInsertar))
         {
@@ -36,6 +49,8 @@ class PedidoController
             Mesa::OcuparMesa($pedidoAInsertar); 
 
             Pedido::RelacionarProductosPedidos($pedido->productos,$pedidoAInsertar->id);
+
+            Usuario::RegistrarOperacion($dataToken, "alta pedido");
             
             $payload = json_encode(array("mensaje" => "El pedido fue ingresado con exito, la mesa se marco como ocupada y se le asocio el pedido. Su numero de id_pedido es: ".$pedidoAInsertar->id));
             $response = $response->withStatus(200);
@@ -56,8 +71,22 @@ class PedidoController
         $data = $request->getParsedBody();
         $id_bajaPedido = $data['id_pedido'];
 
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         if(Pedido::EliminarPedido($id_bajaPedido))
         {
+            Usuario::RegistrarOperacion($dataToken, "baja pedido");
             $payload = json_encode(array("Mensaje" => "El pedido a sido eliminado de la base de datos, la relacion con la mesa y la relacion productos_pedido tambien fueron eliminadas"));
             $response = $response->withStatus(200);
         }
@@ -72,7 +101,7 @@ class PedidoController
         return $response;
     }
 
-    public function ModificarPedido($request, $response, $args)
+    public function ModificarPedido($request, $response, $args) 
     {
         $data = $request->getParsedBody();
         
@@ -94,8 +123,23 @@ class PedidoController
             $pedidoAModificar = json_decode($data['productos']);
         }
 
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         if(Pedido::ModificarPedido($pedidoAModificar))
         {
+            Usuario::RegistrarOperacion($dataToken, "modificacion pedido");
+
             $payload = json_encode(array("Mensaje" => "El pedido a sido modificado en la base de datos"));
             $response = $response->withStatus(200);
         }
@@ -113,6 +157,21 @@ class PedidoController
     public function ListarPedidos($request, $response, $args)
     {
         $lista = Pedido::Listar();
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
+        Usuario::RegistrarOperacion($dataToken, "listado pedidos");
 
         $payload = json_encode(array("listaPedidos" => $lista));
 
@@ -139,6 +198,7 @@ class PedidoController
         $dataToken = Jwtoken::Verificar($token);
 
         $listaPendientes = Pedido::ListarProductosPendientesPreparacionXPuesto($dataToken->puesto);
+        Usuario::RegistrarOperacion($dataToken, "listado producto-pedido pendientes");
 
         if(count($listaPendientes) == 0)
         {
@@ -188,8 +248,11 @@ class PedidoController
         $dataToken = Jwtoken::Verificar($token);
         $producto_pedido = json_decode($data['estado']);
 
+        
         if(Pedido::CambiarEstadoProducto_pedido($producto_pedido, $dataToken))
         {
+            Usuario::RegistrarOperacion($dataToken, "cambio estado producto-pedido");
+
             $payload = json_encode(array("Mensaje" => "Al producto relacionado con el pedido " . $producto_pedido->id_pedido . " se le modifico  el estado en la base de datos"));
             $response = $response->withStatus(200);
         }
@@ -198,6 +261,7 @@ class PedidoController
             $payload = json_encode(array("Error" => "Al producto relacionado con el pedido " . $producto_pedido->id_pedido . " NO se le modifico el estado en la base de datos"));
             $response = $response->withStatus(400); 
         }
+        
         $response->getBody()->write($payload);
         $response = $response->withHeader('Content-Type', 'application/json');
 
@@ -207,6 +271,21 @@ class PedidoController
     public function ListarPedidosListos($request, $response, $args)
     {
         $listaPedidosListos= Pedido::ListarListos();
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
+        Usuario::RegistrarOperacion($dataToken, "listado pedidos listos");
 
         $payload = json_encode(array("listaPedidos" => $listaPedidosListos));
 
@@ -274,7 +353,7 @@ class PedidoController
         }
         else
         {
-            $payload = json_encode(array("Error" => "No existe un pedido en el que coincidan el id_pedido: ".$dataPedido->id_pedido." con el id_mesa: ".$dataPedido->id_mesa));
+            $payload = json_encode(array("Error" => "No existe un pedido en el que coincidan el id_pedido: ".$dataPedido->id_pedido." con el id_mesa: ".$dataPedido->id_mesa." o el pedido fue cancelado"));
         }
         
         $response->getBody()->write($payload);
@@ -284,6 +363,44 @@ class PedidoController
 
         
     }
+
+    public function Cancelarpedido($request, $response, $args)
+    {
+        $data = $request->getParsedBody();
+        $dataPedido = json_decode($data['estado']);
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
+        $payload = Pedido::Cancelar($dataPedido);
+
+        $payloadDecode = json_decode($payload);
+
+        if(isset($payloadDecode->Mensaje))
+        {
+            Usuario::RegistrarOperacion($dataToken, "cancelacion pedido");
+            $response = $response->withStatus(200);
+        }
+        else
+        {
+            $response = $response->withStatus(500);   
+        }
+
+        $response->getBody()->write($payload);
+        $response = $response->withHeader('Content-Type', 'application/json');
+        return $response;
+
+    } 
 
 }
 

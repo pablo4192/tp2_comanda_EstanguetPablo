@@ -20,7 +20,7 @@ require_once "./controllers/pedidoController.php";
 require_once "./controllers/mesaController.php";
 require_once "./controllers/loggerController.php";
 require_once "./controllers/archivoController.php";
-
+require_once "./controllers/consultasController.php";
 require_once "./middlewares/verificadorParametrosUsuario.php";
 require_once "./middlewares/verificadorParametrosProducto.php";
 require_once "./middlewares/verificadorParametrosPedido.php";
@@ -108,9 +108,16 @@ $app->group('/productos_pedidos/pendientes', function (RouteCollectorProxy $grou
     $group->post('[/estado]', \PedidoController::class . ':CambiarEstadoProducto_pedido')->add(\VerificadorParametrosPedido::class . ':VerificarCambiosEstado');
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
+//CANCELAR PEDIDO
+$app->group('/pedidos/cancelar', function (RouteCollectorProxy $group){
+    $group->post('[/estado]', \PedidoController::class . ':Cancelarpedido')->add(\VerificadorParametrosPedido::class . ':VerificarCancelacion');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+   
+
+
 //ENDPOINT PARA LISTAR LOS PEDIDOS 'LISTOS PARA SERVIR'
 $app->group('/pedidos/listos', function (RouteCollectorProxy $group){
-    $group->get('[/]', \PedidoController::class . ':ListarPedidosListos');
+    $group->get('[/]', \PedidoController::class . ':ListarPedidosListos'); 
     
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
@@ -184,11 +191,32 @@ $app->group('/cargar/productos', function (RouteCollectorProxy $group){
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
+//CONSULTAS DEL ADMINISTRADOR (consultas sql)
+$app->group('/consultar/logins', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarLogins');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarLoginsParam')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/operacionesPorSector', function (RouteCollectorProxy $group){
+    $group->post('[/]', \ConsultasController::class . ':RetornarOperacionesPorSector')->add(\Verificador::class . ':VerificarConsultaOperaciones');
+    $group->put('[/]', \ConsultasController::class . ':RetornarOperacionesPorSectorParam')->add(\Verificador::class . ':VerificarConsultaOperaciones')->add(\Verificador::class . ':VerificarFechasConsultas');
+   
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/operacionesPorSector_PorEmpleado', function (RouteCollectorProxy $group){
+    $group->post('[/]', \ConsultasController::class . ':RetornarOperacionesPorSector_PorEmpleado')->add(\Verificador::class . ':VerificarConsultaOperaciones');
+    //$group->put('[/]', \ConsultasController::class . ':RetornarOperacionesPorSector_PorEmpleadoParam')->add(\Verificador::class . ':VerificarConsultaOperaciones')->add(\Verificador::class . ':VerificarFechasConsultas');
+   
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 //LOGIN 
 $app->group('/login', function (RouteCollectorProxy $group){    
     $group->post('[/usuario]', \LoggerController::class . ':Loguear')->add(\VerificadorCredenciales::class . ':VerificarUsuario')->add(\VerificadorParametrosUsuario::class . ':VerificarLogin'); 
 }); 
+
 
 $app->run();
 

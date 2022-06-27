@@ -239,7 +239,7 @@ class VerificadorParametrosPedido
             $token = trim(explode("Bearer", $header)[1]);
         }
         else
-        {   
+        {               
             $token = "";
         }
 
@@ -262,8 +262,10 @@ class VerificadorParametrosPedido
                     
                     if(Pedido::Existe($producto->id_pedido))
                     {
+                        
                         if(Pedido::VerificarEstadoEnDB($producto, $dataToken->puesto))
                         {
+
                             $response = $handler->handle($request);
                             $response->getBody()->write("<br>Parametros verificados, Metodo de consulta: " . $method);
                         }
@@ -339,6 +341,52 @@ class VerificadorParametrosPedido
                 $response = $response->withStatus(400);
             }
         }
+        return $response;
+    }
+
+    public static function VerificarCancelacion($request, $handler)
+    {
+        $data = $request->getParsedBody();
+        $method = $request->getMethod();
+        $response = new Response();
+
+        if(!isset($data))
+        {   
+            $payload = json_encode(array("Error" => "No ingreso ningun parametro"));
+            $response->withStatus(400);
+        }
+        else
+        {
+            if(array_key_exists("estado", $data))
+            {
+                $dataJson = $data['estado'];
+                $dataPedido = json_decode($dataJson);
+
+                if(isset($dataPedido->id_pedido) && isset($dataPedido->estado))
+                {
+                    if(!is_numeric($dataPedido->id_pedido) && strlen($dataPedido->id_pedido) == 5 && $dataPedido->estado == "cancelado")
+                    {
+                        $response = $handler->handle($request);
+                        $payload = json_encode(array("Mensaje" => "Parametros verificados metodo de consulta ".$method));
+                    }
+                    else
+                    {
+                        $payload = json_encode(array("Error" => "El id pedido debe ser alfanumerico de 5 caracteres y el estado debe ser 'cancelado' (para otros cambios de estado dirijase a /productos_pedidos/pendientes)"));
+                    }
+                }
+                else
+                {
+                    $payload = json_encode(array("Error" => "Verifique parametros debe ingresar id_pedido y estado"));
+                }
+
+            }
+            else
+            {
+                $payload = json_encode(array("Error" => "Debe ingresar el parametro estado con los valores {'id_pedido':'id','estado':'cancelado'}"));
+            }
+        }
+
+        $response->getBody()->write($payload);
         return $response;
     }
 

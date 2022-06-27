@@ -28,7 +28,16 @@ class Usuario
         $consulta->bindValue(":tiempo_preparacion", $producto->tiempo_preparacion, PDO::PARAM_INT);
         $consulta->bindValue(":ingresado_por_id", $ingresado_por_id, PDO::PARAM_INT);
 
-        return $consulta->execute();
+        $consulta->execute();
+
+        $filasAfectadas = $consulta->rowCount();
+
+        if($filasAfectadas > 0)
+        {
+            
+            return true;
+        }
+        return false;
     }
 
     public static function Insertar($usuario)
@@ -47,6 +56,7 @@ class Usuario
 
         if($filasAfectadas > 0)
         {
+           
             return true;
         }
         return false;
@@ -63,12 +73,7 @@ class Usuario
         $consulta->bindValue(":clave", $usuario->clave, PDO::PARAM_INT);
         $consulta->bindValue(":puesto", $usuario->puesto, PDO::PARAM_STR);
       
-        
-        
-            $consulta->execute();
-        
-        
-
+        $consulta->execute();
         
         $filasAfectadas = $consulta->rowCount();
         
@@ -92,6 +97,7 @@ class Usuario
 
         if($filasAfectadas > 0)
         {
+            
             return true;
         }
         return false;
@@ -135,6 +141,7 @@ class Usuario
 
         if($filasAfectadas > 0)
         {
+            
             return true;
         }
         return false;
@@ -174,6 +181,7 @@ class Usuario
 
         if($filasAfectadas > 0)
         {
+            
             return true;
         }
         return false;
@@ -192,6 +200,7 @@ class Usuario
 
         if($filasAfectadas > 0)
         {
+            
             return true;
         }
         return false;
@@ -202,10 +211,15 @@ class Usuario
         $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM usuarios");
 
-        $consulta->execute();
-
-        return $consulta->fetchAll(PDO::FETCH_CLASS, "Usuario");
+        if($consulta->execute())
+        {
+            
+            return $consulta->fetchAll(PDO::FETCH_CLASS, "Usuario");
+        }
+        return null;
     }
+        
+        
 
     public static function Existe($usuario)
     {
@@ -254,16 +268,84 @@ class Usuario
     {
         $arrayDeUsuarios = self::Listar();
 
+        
         foreach($arrayDeUsuarios as $u)
         {
             if($u->clave == $clave && $u->id == $id)
             {
-                return $u->puesto;
+                return trim($u->puesto);
+            }
+        }
+        return null;
+    }
+
+    public static function RetornarDatosUsuario($id)
+    {
+        $arrayUsuarios = self::Listar();
+
+        foreach($arrayUsuarios as $u)
+        {
+            if($u->id == $id)
+            {
+                return array("nombre" => $u->nombre, "apellido" => $u->apellido, "clave" => $u->clave, "puesto" => $u->puesto);
             }
         }
         return null;
     }
     
+    public static function RegistrarLogin($id_usuario)
+    {
+        $dataUsuario = self::RetornarDatosUsuario($id_usuario);
+        $fecha = date("Y/m/d");
+        $hora = date("H:i:s");
+
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
+        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO logins (id_usuario,nombre,apellido,fecha,hora) VALUES (:id_usuario,:nombre,:apellido,:fecha,:hora)");
+
+        $consulta->bindValue(":id_usuario", $id_usuario, PDO::PARAM_INT);
+        $consulta->bindValue(":nombre", $dataUsuario['nombre'], PDO::PARAM_STR);
+        $consulta->bindValue(":apellido", $dataUsuario['apellido'], PDO::PARAM_STR);
+        $consulta->bindValue(":fecha", $fecha, PDO::PARAM_STR);
+        $consulta->bindValue(":hora", $hora, PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        $filasAfectadas = $consulta->rowCount();
+
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public static function RegistrarOperacion($usuario, $tipo)
+    {
+        $fecha = date("Y/m/d");
+        $hora = date("H:i:s");
+
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
+        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO operaciones (id_usuario,puesto,tipo,fecha,hora) VALUES (:id_usuario,:puesto,:tipo,:fecha,:hora)");
+
+        $consulta->bindValue(":id_usuario", $usuario->id, PDO::PARAM_INT);
+        $consulta->bindValue(":puesto", $usuario->puesto, PDO::PARAM_STR);
+        $consulta->bindValue(":tipo", $tipo, PDO::PARAM_STR);
+        $consulta->bindValue(":fecha", $fecha, PDO::PARAM_STR);
+        $consulta->bindValue(":hora", $hora, PDO::PARAM_STR);
+
+        $consulta->execute();
+
+        $filasAfectadas = $consulta->rowCount();
+
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;
+
+    }
+
+
 
     
     

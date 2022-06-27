@@ -33,6 +33,7 @@ class ProductoController
         
         if(Usuario::InsertarProducto($productoAInsertar, $dataToken->id))
         {
+            Usuario::RegistrarOperacion($dataToken, "alta producto");
             $payload = json_encode(array("mensaje:" => "Producto insertado en la base de datos"));
             $response = $response->withStatus(200);
         }
@@ -53,8 +54,22 @@ class ProductoController
         $data = $request->getParsedBody();
         $id_bajaProducto = $data['id_producto'];
 
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         if(Usuario::EliminarProducto($id_bajaProducto))
         {
+            Usuario::RegistrarOperacion($dataToken, "baja producto");
             $payload = json_encode(array("Mensaje" => "El producto a sido eliminado de la base de datos"));
             $response = $response->withStatus(200);
         }
@@ -94,8 +109,23 @@ class ProductoController
             $ProductoAModificar = json_decode($data['tiempo_preparacion']);
         }
 
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         if(Usuario::ModificarProducto($ProductoAModificar))
         {
+            Usuario::RegistrarOperacion($dataToken, "modificacion producto");
+
             $payload = json_encode(array("Mensaje" => "El producto a sido modificado en la base de datos"));
             $response = $response->withStatus(200);
         }
@@ -112,7 +142,21 @@ class ProductoController
 
     public function ListarProductos($request, $response, $args)
     {
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         $lista = Producto::Listar();
+        Usuario::RegistrarOperacion($dataToken, "listado productos");
 
         $payload = json_encode(array("listaProductos" => $lista));
 

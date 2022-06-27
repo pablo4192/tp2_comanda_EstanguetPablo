@@ -45,6 +45,7 @@ class Pedido
         
         if($filasAfectadas > 0)
         {
+           
             return true;
         }
         return false;  
@@ -94,7 +95,7 @@ class Pedido
         $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("DELETE pedidos FROM pedidos WHERE id = :id_pedido");
 
-        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_STR);
 
         $consulta->execute();
 
@@ -167,6 +168,7 @@ class Pedido
         
         if($filasAfectadas > 0)
         {
+            
             return true;
         }
         return false;
@@ -275,7 +277,7 @@ class Pedido
         $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("DELETE productos_pedidos FROM productos_pedidos WHERE id_pedido = :id_pedido");
 
-        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_STR);
 
         $consulta->execute();
 
@@ -292,9 +294,9 @@ class Pedido
     private static function EliminarRelacionPedidoMesa($id_pedido)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos();
-        $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET nombre_cliente = '',id_pedido = '',estado = 'libre' WHERE id_pedido = :id_pedido");
+        $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET nombre_cliente = '',id_pedido = '',estado = 'cerrada' WHERE id_pedido = :id_pedido");
 
-        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_STR);
 
         $consulta->execute();
 
@@ -491,7 +493,8 @@ class Pedido
     {
         $arrayProductos = self::ListarProductosSegunIdPedidoYPuesto($producto_pedido->id_pedido, $puesto);
         $retorno = false;
-
+       
+        
         if(count($arrayProductos) > 0)
         {
             $estado = $arrayProductos[0]['estado'];
@@ -504,7 +507,8 @@ class Pedido
             {
                 $retorno = true;
             }
-
+            
+           
         }
         
         return $retorno;
@@ -545,7 +549,7 @@ class Pedido
     public static function ListarPorIdPedidoYMesa($id_pedido, $id_mesa)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
-        $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM pedidos WHERE id = :id_pedido AND id_mesa = :id_mesa");
+        $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM pedidos WHERE id = :id_pedido AND id_mesa = :id_mesa AND estado != 'cancelado'");
 
         $consulta->bindValue("id_pedido", $id_pedido, PDO::PARAM_STR);
         $consulta->bindValue("id_mesa", $id_mesa, PDO::PARAM_INT);
@@ -569,6 +573,34 @@ class Pedido
             }
         }
         return false;
+    }
+
+    public static function Cancelar($dataPedido)
+    {
+        if(self::CambiarEstadoPedido($dataPedido, ""))
+        {
+            if(self::EliminarRelaciones($dataPedido->id_pedido))
+            {
+                if(self::EliminarRelacionPedidoMesa($dataPedido->id_pedido))
+                {
+                    return json_encode(array("Mensaje" => "Al pedido id ".$dataPedido->id_pedido." se le cambio el estado a cancelado, se eliminaron las relaciones mesa-pedido y producto-pedido"));
+                }
+                else
+                {
+                    return json_encode(array("Error" => "Al pedido id ".$dataPedido->id_pedido." NO se le eliminaron las relaciones mesa-pedido"));
+                }
+
+            }
+            else
+            {
+                return json_encode(array("Error" => "Al pedido id ".$dataPedido->id_pedido." NO se le eliminaron las relaciones producto-pedido"));
+            }
+        }
+        else
+        {
+            return json_encode(array("Error" => "Al pedido id ".$dataPedido->id_pedido." NO se le cambio el estado a cancelado"));
+        }
+
     }
 }
 

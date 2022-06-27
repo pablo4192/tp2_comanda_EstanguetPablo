@@ -9,6 +9,19 @@ class UsuarioController
         $dataJson = $data['usuario'];
         $usuario = json_decode($dataJson);
 
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         $usuarioAInsertar = new Usuario();
         $usuarioAInsertar->nombre = $usuario->nombre;
         $usuarioAInsertar->apellido = $usuario->apellido;
@@ -17,6 +30,7 @@ class UsuarioController
 
         if(Usuario::Insertar($usuarioAInsertar))
         {
+            Usuario::RegistrarOperacion($dataToken, "alta usuario");
             $payload = json_encode(array("mensaje" => "Usuario insertado con exito en la base de datos"));
             $response = $response->withStatus(200);
         }
@@ -33,7 +47,21 @@ class UsuarioController
 
     public function ListarUsuarios($request, $response, $args)
     {
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         $lista = Usuario::Listar();
+        Usuario::RegistrarOperacion($dataToken, "listado usuarios");
 
         $payload = json_encode(array("ListaUsuarios" => $lista));
 
@@ -49,8 +77,23 @@ class UsuarioController
         $data = $request->getParsedBody();
         $id_bajaUsuario = $data['id_usuario'];
 
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         if(Usuario::EliminarUsuario($id_bajaUsuario))
         {
+            Usuario::RegistrarOperacion($dataToken, "baja usuario");
+            
             $payload = json_encode(array("Mensaje" => "El usuario a sido eliminado de la base de datos"));
             $response = $response->withStatus(200);
         }
@@ -85,9 +128,24 @@ class UsuarioController
         {
             $usuarioAModificar = json_decode($data['puesto']);
         }
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
         
         if(Usuario::ModificarUsuario($usuarioAModificar))
         {
+            Usuario::RegistrarOperacion($dataToken, "modificacion usuario");
+
             $payload = json_encode(array("Mensaje" => "El usuario a sido modificado en la base de datos"));
             $response = $response->withStatus(200);
         }
