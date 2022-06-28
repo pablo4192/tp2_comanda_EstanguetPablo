@@ -42,7 +42,7 @@ class VerificadorParametrosProducto
         
                 if(isset($producto->nombre) && isset($producto->precio) && isset($producto->stock) && isset($producto->tipo) && isset($producto->tiempo_preparacion))
                 {
-                    if(ctype_alpha($producto->nombre) && $producto->nombre != "" && 
+                    if(!is_numeric($producto->nombre) && $producto->nombre != "" && 
                        is_numeric($producto->precio) && $producto->precio > 0 && 
                        is_numeric($producto->stock) && $producto->stock > 0 && 
                        ctype_alpha($producto->tipo) && $producto->tipo != "" && ($producto->tipo == "cocinero" || $producto->tipo == "repostero" || $producto->tipo == "bartender" || $producto->tipo == "cervecero") &&
@@ -62,12 +62,12 @@ class VerificadorParametrosProducto
                     }
                     else
                     {
-                        $response->getBody()->write(json_encode(array("Error" => "Verifique que el campo nombre contenga datos, los campos precio, stock y tiempo_preparacion sean mayores a 0 y tipo sea valido (platoPrincipal, postre, bebida, cerveza)")));
+                        $response->getBody()->write(json_encode(array("Error" => "Verifique que el campo nombre contenga datos, los campos precio, stock y tiempo_preparacion sean mayores a 0 y tipo sea valido (cocinero, repostero, bartender, cervecero)")));
                     }
                 }
                 else
                 {
-                    $response->getBody()->write(json_encode(array("Error" => "Verifique parametros, debe ingresar: nombre, precio, stock y tiempo_preparacion del producto")));
+                    $response->getBody()->write(json_encode(array("Error" => "Verifique parametros, debe ingresar: nombre, precio, tipo,stock y tiempo_preparacion del producto")));
                 }
             }
         }

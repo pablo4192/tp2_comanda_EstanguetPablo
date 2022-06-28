@@ -8,7 +8,7 @@ class Usuario
     public $apellido;
     public $clave;
     public $puesto;
-    
+    public $estado;
     
     function __construct()
     {
@@ -43,12 +43,13 @@ class Usuario
     public static function Insertar($usuario)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos();
-        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO usuarios (nombre,apellido,clave,puesto) VALUES (:nombre,:apellido,:clave,:puesto)");
+        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO usuarios (nombre,apellido,clave,puesto,estado) VALUES (:nombre,:apellido,:clave,:puesto,'activo')");
 
         $consulta->bindValue(":nombre", $usuario->nombre, PDO::PARAM_STR);
         $consulta->bindValue(":apellido", $usuario->apellido, PDO::PARAM_STR);
         $consulta->bindValue(":clave", $usuario->clave, PDO::PARAM_INT);
         $consulta->bindValue(":puesto", $usuario->puesto, PDO::PARAM_STR);
+        
 
         $consulta->execute();
     
@@ -287,7 +288,7 @@ class Usuario
         {
             if($u->id == $id)
             {
-                return array("nombre" => $u->nombre, "apellido" => $u->apellido, "clave" => $u->clave, "puesto" => $u->puesto);
+                return array("nombre" => $u->nombre, "apellido" => $u->apellido, "clave" => $u->clave, "puesto" => $u->puesto, "estado" => $u->estado);
             }
         }
         return null;
@@ -345,7 +346,41 @@ class Usuario
 
     }
 
+    public static function Suspender($id_usuario)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
+        $consulta = $accesoADatos->PrepararConsulta("UPDATE usuarios SET estado = 'suspendido' WHERE id = :id_usuario");
 
+        $consulta->bindValue(":id_usuario", $id_usuario, PDO::PARAM_INT);
+
+        $consulta->execute();
+
+        $filasAfectadas = $consulta->rowCount();
+
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public static function LevantarSuspension($id_usuario)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
+        $consulta = $accesoADatos->PrepararConsulta("UPDATE usuarios SET estado = 'activo' WHERE id = :id_usuario");
+
+        $consulta->bindValue(":id_usuario", $id_usuario, PDO::PARAM_INT);
+
+        $consulta->execute();
+
+        $filasAfectadas = $consulta->rowCount();
+
+        if($filasAfectadas > 0)
+        {
+            return true;
+        }
+        return false;
+    }
 
     
     

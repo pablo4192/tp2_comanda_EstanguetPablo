@@ -557,7 +557,7 @@ class Consultas
             {
                 if($m->id == $idMesa)
                 {
-                    array_push($mesasMasUsadas, $m);
+                    array_push($mesasMasUsadas, $m->id);
                 }
             }
         }
@@ -764,7 +764,7 @@ class Consultas
                     }
     
                     $mayorFacturacion = $total;
-                    array_push($mesasMasFacturacion, $m);
+                    array_push($mesasMasFacturacion, array($m->id => "Mayor Facturacion: ".$mayorFacturacion));
                 }
             }
 
@@ -806,7 +806,7 @@ class Consultas
                     }
     
                     $mayorFacturacion = $total;
-                    array_push($mesasMasFacturacion, $m);
+                    array_push($mesasMasFacturacion, array($m->id => "Mayor Facturacion: ".$mayorFacturacion));
                 }
             }
 

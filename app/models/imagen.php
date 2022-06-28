@@ -23,7 +23,7 @@ class Imagen
 
         if(!is_file($destino))
         {
-            $nombreArchivo = "/"."idPedido".$this->id_pedido."_idMesa".$this->id_mesa."_".$this->fecha."_".$_FILES['imagen']['name'];
+            $nombreArchivo = "/"."idPedido_".$this->id_pedido."_idMesa_".$this->id_mesa."_".$this->fecha."_".$_FILES['imagen']['name'];
             $ruta = "./".$destino.$nombreArchivo;
 
             if(move_uploaded_file($_FILES['imagen']['tmp_name'], $ruta))

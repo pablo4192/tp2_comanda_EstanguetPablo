@@ -250,7 +250,7 @@ class Pedido
     public static function ListarProductosPendientesPreparacionXPuesto($puesto)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
-        $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos_pedidos WHERE puesto_preparacion = :puesto AND estado = 'pendiente'");
+        $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos_pedidos WHERE puesto_preparacion = :puesto AND (estado = 'pendiente' OR estado = 'en preparacion')");
 
         $consulta->bindValue(":puesto", $puesto, PDO::PARAM_STR);
 
@@ -326,6 +326,29 @@ class Pedido
                 self::Relacionar($productos[$i], $puesto_preparacion, $id_pedido);
                 $cantidad --;
                 
+            }
+        }
+
+        self::DescontarStock($productos);
+    }
+
+    private static function DescontarStock($productos)
+    {
+        $arrayProductos = Producto::Listar();
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
+        
+        foreach($productos as $prod)
+        {
+            foreach($arrayProductos as $p)
+            {
+                if($prod->id == $p->id)
+                {
+                    $nuevoStock = $p->stock - $prod->cantidad;
+                    $consulta = $accesoADatos->PrepararConsulta("UPDATE productos SET stock = :nuevoStock WHERE id = :id");
+                    $consulta->bindValue(":id", $prod->id, PDO::PARAM_INT);
+                    $consulta->bindValue(":nuevoStock", $nuevoStock, PDO::PARAM_INT);
+                    $consulta->execute();
+                }
             }
         }
     }

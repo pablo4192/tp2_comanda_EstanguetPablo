@@ -93,7 +93,7 @@ class Mesa
         $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET estado = :estado WHERE id = :id_mesa");
 
         $consulta->bindValue(":estado", $estado, PDO::PARAM_STR);
-        $consulta->bindValue(":id_mesa", $id_mesa, PDO::PARAM_INT);
+        $consulta->bindValue(":id_mesa", $id_mesa, PDO::PARAM_STR);
 
         $consulta->execute();
 
@@ -112,7 +112,7 @@ class Mesa
         $accesoADatos = AccesoADatos::RetornarAccesoADatos();
         $consulta = $accesoADatos->PrepararConsulta("UPDATE mesas SET estado = 'cerrada',nombre_cliente = '',id_pedido = '' WHERE id = :id_mesa"); 
 
-        $consulta->bindValue(":id_mesa", $data->id, PDO::PARAM_INT);
+        $consulta->bindValue(":id_mesa", $data->id, PDO::PARAM_STR);
 
         $consulta->execute();
 

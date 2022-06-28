@@ -109,7 +109,7 @@ class VerificadorParametrosUsuario
                 }
                 else
                 {
-                    $response->getBody()->write(json_encode(array("Error" => "Verifique parametros, debe ingresar: nombre, apellido, clave y puesto del usuario")));
+                    $response->getBody()->write(json_encode(array("Error" => "Verifique parametros, debe ingresar: nombre, apellido, clave, puesto del usuarios")));
                 }
             }
         }

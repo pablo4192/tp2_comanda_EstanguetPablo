@@ -25,11 +25,21 @@ class VerificadorCredenciales
         else
         {
             $dataUsuario = Usuario::RetornarDatosUsuario($usuario->id);
+            $ruta = $request->getUri()->getPath();
 
-            $response = $handler->handle($request); 
-            $payload = json_encode(array("Bienvenido" => $dataUsuario['nombre']));
+            if($ruta != "/login" && $dataUsuario->estado == "suspendido")
+            {
+                $payload = json_encode(array("Acceso denegado" => "El usuario no puede ingresar al sistema, su estado es 'supendido'"));
+                $response = $response->withStatus(400);
+            }
+            else
+            {
+                $response = $handler->handle($request); 
+                $payload = json_encode(array("Bienvenido" => $dataUsuario['nombre']));
+                
+            }
         }
-        
+            
         $response->getBody()->write($payload);
         
         return $response;
@@ -59,18 +69,26 @@ class VerificadorCredenciales
         }
         else
         {
-            $ruta = $request->getUri()->getPath();
-            
-            if(self::VerificadorDeAccesos($ruta, $dataToken->puesto))
+            if(!Usuario::Existe($dataToken))
             {
-                $response = $handler->handle($request);
-                $response->getBody()->write("<br>");
-                $response->getBody()->write(json_encode(array("Mensaje" => "Token verificado")));
+                $response->getBody()->write(json_encode(array("Error" => "El token es invalido, el usuario no existe en la base de datos!!")));
             }
             else
             {
-                $response->getBody()->write(json_encode(array("Mensaje" => "No posee autorizacion para realizar esta accion (token invalido)")));
+                $ruta = $request->getUri()->getPath();
+                
+                if(self::VerificadorDeAccesos($ruta, $dataToken->puesto))
+                {
+                    $response = $handler->handle($request);
+                    $response->getBody()->write("<br>");
+                    $response->getBody()->write(json_encode(array("Mensaje" => "Token verificado")));
+                }
+                else
+                {
+                    $response->getBody()->write(json_encode(array("Mensaje" => "No posee autorizacion para realizar esta accion (token invalido)")));
+                }
             }
+
         }
 
         return $response;

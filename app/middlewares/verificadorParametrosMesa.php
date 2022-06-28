@@ -144,7 +144,7 @@ class VerificadorParametrosMesa
 
                         if(isset($id))
                         {
-                            if(is_numeric($id) && $id > 0)
+                            if(!is_numeric($id) && $id != "")
                             {
                                 $response = $handler->handle($request);
                                 $response->getBody()->write(json_encode(array("Mensaje" => "Parametros verificados, metodo de consulta: " . $method)));   
@@ -172,7 +172,7 @@ class VerificadorParametrosMesa
 
                             if(isset($id))
                             {
-                                if(is_numeric($id) && $id > 0)
+                                if(!is_numeric($id) && $id != "")
                                 {
                                     $response = $handler->handle($request);
                                     $response->getBody()->write(json_encode(array("Mensaje" => "Parametros verificados, metodo de consulta: " . $method)));   
@@ -200,7 +200,7 @@ class VerificadorParametrosMesa
 
                                 if(isset($datos->id) && isset($datos->medio_de_pago))
                                 {
-                                    if(is_numeric($datos->id) && $datos->id > 0 && ($datos->medio_de_pago == "efectivo" || $datos->medio_de_pago == "mp" || $datos->medio_de_pago == "debito" || $datos->medio_de_pago == "credito"))
+                                    if(!is_numeric($datos->id) && $datos->id != "" && ($datos->medio_de_pago == "efectivo" || $datos->medio_de_pago == "mp" || $datos->medio_de_pago == "debito" || $datos->medio_de_pago == "credito"))
                                     {
                                         $response = $handler->handle($request);
                                         $response->getBody()->write(json_encode(array("Mensaje" => "Parametros verificados, metodo de consulta: " . $method)));   

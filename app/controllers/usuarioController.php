@@ -159,6 +159,96 @@ class UsuarioController
 
         return $response;
     }
+
+    public function SuspenderUsuario($request, $response, $args)
+    {
+        $data = $request->getParsedBody();
+
+        if(isset($data) && array_key_exists("id_usuario", $data))
+        {
+            $id_usuario = $data['id_usuario'];
+        }
+        else
+        {
+            $id_usuario = 0;
+        }
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
+        if(Usuario::Suspender($id_usuario))
+        {
+            Usuario::RegistrarOperacion($dataToken, "suspension del usuario id: ".$id_usuario);
+
+            $payload = json_encode(array("Mensaje" => "El usuario id ".$id_usuario." fue suspendido"));
+            $response = $response->withStatus(200);
+        }
+        else
+        {
+            $payload = json_encode(array("Error" => "El usuario ".$id_usuario." NO a sido suspendido. Verifique que el id_usuario exista en la base de datos"));
+            $response = $response->withStatus(400); 
+        }
+
+        $response->getBody()->write($payload);
+        $response = $response->withHeader('Content-Type', 'application/json');
+
+        return $response;
+    }
+
+    public function LevantarSuspensionUsuario($request, $response, $args)
+    {
+        $data = $request->getParsedBody();
+
+        if(isset($data) && array_key_exists("id_usuario", $data))
+        {
+            $id_usuario = $data['id_usuario'];
+        }
+        else
+        {
+            $id_usuario = 0;
+        }
+
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
+        if(Usuario::LevantarSuspension($id_usuario))
+        {
+            Usuario::RegistrarOperacion($dataToken, "se levanto la suspension del usuario id: ".$id_usuario);
+
+            $payload = json_encode(array("Mensaje" => "Al usuario id ".$id_usuario." se le levanto la suspension, ya puede operar normalmente"));
+            $response = $response->withStatus(200);
+        }
+        else
+        {
+            $payload = json_encode(array("Error" => "Al usuario ".$id_usuario." NO se le a levantado la suspension. Verifique que el id_usuario exista en la base de datos y que no se haya levantado la suspension anteriormente"));
+            $response = $response->withStatus(400); 
+        }
+        
+        $response->getBody()->write($payload);
+        $response = $response->withHeader('Content-Type', 'application/json');
+
+        return $response;
+    }
 }
 
 ?>

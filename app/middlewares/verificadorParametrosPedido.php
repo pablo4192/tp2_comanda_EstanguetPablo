@@ -14,6 +14,19 @@ class VerificadorParametrosPedido
         $method = $request->getMethod();
         $response = new Response();
         
+        $header = $request->getHeaderLine('Authorization');
+
+        if($header != null)
+        {
+            $token = trim(explode("Bearer", $header)[1]);
+        }
+        else
+        {   
+            $token = "";
+        }
+
+        $dataToken = Jwtoken::Verificar($token);
+
         if(!isset($data))
         {   
             $response->getBody()->write(json_encode(array("Error" => "No ingreso ningun parametro")));
@@ -44,9 +57,9 @@ class VerificadorParametrosPedido
                         else
                         {
                             
-                            if(!Usuario::EsMozo($pedido->id_mozo))
+                            if(!Usuario::EsMozo($pedido->id_mozo) || $dataToken->puesto != "mozo")
                             {
-                                $response->getBody()->write(json_encode(array("Acceso denegado" => "id_mozo no valido. No se encontro un mozo con el id ingresado")));
+                                $response->getBody()->write(json_encode(array("Acceso denegado" => "id_mozo no valido (Verificacion de token). No se encontro un mozo con el id ingresado")));
                             }
                             else
                             {

@@ -82,6 +82,15 @@ $app->group('/usuarios/modificacion', function (RouteCollectorProxy $group){
     $group->put('[/usuario]',  \UsuarioController::class . ':ModificarUsuario')->add(\VerificadorParametrosUsuario::class . ':VerificarModificacion');
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
+//SUSPENDER
+$app->group('/usuarios/suspender', function (RouteCollectorProxy $group){
+   $group->post('[/id_usuario]', \UsuarioController::class . ':SuspenderUsuario');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+//LEVANTAR SUSPENSION
+$app->group('/usuarios/levantarSuspension', function (RouteCollectorProxy $group){
+    $group->post('[/id_usuario]', \UsuarioController::class . ':LevantarSuspensionUsuario');
+ })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -113,8 +122,6 @@ $app->group('/pedidos/cancelar', function (RouteCollectorProxy $group){
     $group->post('[/estado]', \PedidoController::class . ':Cancelarpedido')->add(\VerificadorParametrosPedido::class . ':VerificarCancelacion');
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
    
-
-
 //ENDPOINT PARA LISTAR LOS PEDIDOS 'LISTOS PARA SERVIR'
 $app->group('/pedidos/listos', function (RouteCollectorProxy $group){
     $group->get('[/]', \PedidoController::class . ':ListarPedidosListos'); 

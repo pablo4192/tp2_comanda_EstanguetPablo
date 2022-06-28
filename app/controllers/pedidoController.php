@@ -113,13 +113,13 @@ class PedidoController
         {
             $pedidoAModificar = json_decode($data['id_mesa']);
         }
-        else if(array_key_exists("estado", $data)) //Para que cambien los encargados de preparacion
+        else if(array_key_exists("estado", $data)) 
         {
             $pedidoAModificar = json_decode($data['estado']);
         }
         else if(array_key_exists("productos", $data))
         {
-            //Modificar relacion productos_pedidos //Modificar total del pedido
+           
             $pedidoAModificar = json_decode($data['productos']);
         }
 
