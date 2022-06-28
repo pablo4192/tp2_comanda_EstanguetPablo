@@ -192,21 +192,91 @@ $app->group('/cargar/productos', function (RouteCollectorProxy $group){
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //CONSULTAS DEL ADMINISTRADOR (consultas sql)
+
+//USUARIOS
 $app->group('/consultar/logins', function (RouteCollectorProxy $group){
     $group->get('[/]', \ConsultasController::class . ':RetornarLogins');
-    $group->post('[/parametros]', \ConsultasController::class . ':RetornarLoginsParam')->add(\Verificador::class . ':VerificarFechasConsultas');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarLoginsParam')->add(\Verificador::class . ':VerificarConsultaOperaciones_PorPuesto');
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
 $app->group('/consultar/operacionesPorSector', function (RouteCollectorProxy $group){
-    $group->post('[/]', \ConsultasController::class . ':RetornarOperacionesPorSector')->add(\Verificador::class . ':VerificarConsultaOperaciones');
-    $group->put('[/]', \ConsultasController::class . ':RetornarOperacionesPorSectorParam')->add(\Verificador::class . ':VerificarConsultaOperaciones')->add(\Verificador::class . ':VerificarFechasConsultas');
+    $group->post('[/]', \ConsultasController::class . ':RetornarOperacionesPorSector')->add(\Verificador::class . ':VerificarConsultaOperaciones_PorPuesto');
+    $group->put('[/]', \ConsultasController::class . ':RetornarOperacionesPorSectorParam')->add(\Verificador::class . ':VerificarConsultaOperaciones_PorPuesto')->add(\Verificador::class . ':VerificarFechasConsultas');
    
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
 $app->group('/consultar/operacionesPorSector_PorEmpleado', function (RouteCollectorProxy $group){
-    $group->post('[/]', \ConsultasController::class . ':RetornarOperacionesPorSector_PorEmpleado')->add(\Verificador::class . ':VerificarConsultaOperaciones');
-    //$group->put('[/]', \ConsultasController::class . ':RetornarOperacionesPorSector_PorEmpleadoParam')->add(\Verificador::class . ':VerificarConsultaOperaciones')->add(\Verificador::class . ':VerificarFechasConsultas');
-   
+    $group->post('[/]', \ConsultasController::class . ':RetornarOperacionesPorSector_PorEmpleado')->add(\Verificador::class . ':VerificarConsultaOperaciones_PorPuesto');
+    $group->put('[/parametros]', \ConsultasController::class . ':RetornarOperacionesPorSector_PorEmpleadoParam')->add(\Verificador::class . ':VerificarConsultaOperaciones_PorPuesto')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/operaciones_PorIdEmpleado', function (RouteCollectorProxy $group){
+    $group->get('[/id]', \ConsultasController::class . ':RetornarOperaciones_PorIdEmpleado')->add(\Verificador::class . ':VerificarConsultaOperaciones_PorId');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarOperaciones_PorIdEmpleadoParam')->add(\Verificador::class . ':VerificarConsultaOperaciones_PorId')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+//PEDIDOS
+$app->group('/consultar/masVendido', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarMasVendido');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarMasVendido_Param')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/menosVendido', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarMenosVendido');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarMenosVendido_Param')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/fueraDeTiempo', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarPedidosFueraDeTiempo');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarPedidosFueraDeTiempo_Param')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/pedidosCancelados', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarPedidosCancelados');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarPedidosCancelados_Param')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+//MESAS
+$app->group('/consultar/mesaMasUsada', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarMesaMasUsada');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarMesaMasUsada_Param')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/mesaMenosUsada', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarMesaMenosUsada');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarMesaMenosUsada_Param')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/mesaConMasFacturacion', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarMesaMasFacturacion');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarMesaMasFacturacion_Param')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/mesaConMenosFacturacion', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarMesaMenosFacturacion');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarMesaMenosFacturacion_Param')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/mesaMayorImporte', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarMesaMayorImporte');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarMesaMayorImporte_Param')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/mesaMenorImporte', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarMesaMenorImporte');
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarMesaMenorImporte_Param')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/mesaFacturacion', function (RouteCollectorProxy $group){
+    $group->post('[/parametros]', \ConsultasController::class . ':RetornarFacturacionMesa')->add(\Verificador::class . ':VerificarFechasConsultas');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/mejoresComentarios', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarMejoresComentarios');
+})->add(\VerificadorCredenciales::class . ':VerificarToken');
+
+$app->group('/consultar/peoresComentarios', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ConsultasController::class . ':RetornarPeoresComentarios');
 })->add(\VerificadorCredenciales::class . ':VerificarToken');
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------

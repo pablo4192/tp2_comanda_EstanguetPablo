@@ -88,7 +88,7 @@ class Verificador
                     {
                         $response = $handler->handle($request);
                         $response = $response->withStatus(200);
-                        $payload = json_encode(array("Mensaje" => "Parametros verificados, metodo de consulta ".$method));
+                        $payload = json_encode(array("Mensaje" => "Parametros fechas verificados, metodo de consulta ".$method));
                     }
                     else
                     {
@@ -104,10 +104,10 @@ class Verificador
 
     }
 
-    public static function VerificarConsultaOperaciones($request, $handler)
+    public static function VerificarConsultaOperaciones_PorPuesto($request, $handler)
     {
-        $data = $request->getParsedBody();
         $method = $request->getMethod();
+        $data = $request->getParsedBody();
         $response = new Response();
 
         if(!isset($data))
@@ -133,6 +133,52 @@ class Verificador
                 {
                     $response = $handler->handle($request);
                     $payload = json_encode(array("Mensaje" => "Parametros verificados, metodo de consulta ".$method));
+                    $response = $response->withStatus(200);
+                }
+            }
+        }
+        $response->getBody()->write($payload);
+        return $response;
+    }
+
+    public static function VerificarConsultaOperaciones_PorId($request, $handler)
+    {
+        $method = $request->getMethod();
+        
+        if($method == "GET")
+        {
+            $data = $request->getQueryParams();
+        }
+        else if($method == "POST")
+        {
+            $data = $request->getParsedBody();
+        }
+
+        $response = new Response();
+
+        if(!isset($data))
+        {
+            $payload = json_encode(array("Error" => "No ingreso parametro 'id'"));
+            $response = $response->withStatus(400);
+        }
+        else
+        {
+            if(!array_key_exists("id", $data))
+            {
+                $payload = json_encode(array("Error" => "No ingreso parametro 'id'"));
+                $response = $response->withStatus(400);
+            }   
+            else
+            {
+                if(!is_numeric($data['id']) || $data['id'] <= 0)
+                {
+                    $payload = json_encode(array("Error" => "Verifique parametros, id debe ser numerico y mayor a 0"));
+                    $response = $response->withStatus(400);
+                }
+                else
+                {
+                    $response = $handler->handle($request);
+                    $payload = json_encode(array("Mensaje" => "Parametro id verificado, metodo de consulta ".$method));
                     $response = $response->withStatus(200);
                 }
             }

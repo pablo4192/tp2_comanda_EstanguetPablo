@@ -167,6 +167,18 @@ class Mesa
 
 
     }
+
+    public static function ListarEncuestas()
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos();
+        $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM encuestas");
+
+        $consulta->execute();
+
+        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    
         
 }
 

@@ -24,7 +24,6 @@ class Producto
 
         if($consulta->execute())
         {
-            
             return $consulta->fetchAll(PDO::FETCH_CLASS, "Producto");
         }
         return null;

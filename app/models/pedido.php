@@ -262,11 +262,13 @@ class Pedido
     private static function Relacionar($producto, $puesto_preparacion, $id_pedido)
     {
         $accesoADatos = AccesoADatos::RetornarAccesoADatos();
-        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO productos_pedidos (id_pedido,id_producto,puesto_preparacion,estado) VALUES (:id_pedido,:id_producto,:puesto_preparacion,'pendiente')");
+        $consulta = $accesoADatos->PrepararConsulta("INSERT INTO productos_pedidos (id_pedido,id_producto,puesto_preparacion,estado,fecha) VALUES (:id_pedido,:id_producto,:puesto_preparacion,'pendiente',:fecha)");
+        $fecha = date("Y/m/d");
 
         $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_STR);
         $consulta->bindValue(":id_producto", $producto->id, PDO::PARAM_INT);
         $consulta->bindValue(":puesto_preparacion", $puesto_preparacion, PDO::PARAM_STR);
+        $consulta->bindValue(":fecha", $fecha, PDO::PARAM_STR);
 
         $consulta->execute();
         
@@ -361,7 +363,7 @@ class Pedido
         $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos_pedidos WHERE estado = :estado AND id_pedido = :id_pedido");
 
-        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_STR);
         $consulta->bindValue(":estado", $estado, PDO::PARAM_STR);
 
         $consulta->execute();
@@ -468,7 +470,7 @@ class Pedido
         $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
         $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos_pedidos WHERE puesto_preparacion = :puesto AND id_pedido = :id_pedido");
 
-        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_INT);
+        $consulta->bindValue(":id_pedido", $id_pedido, PDO::PARAM_STR);
         $consulta->bindValue(":puesto", $puesto, PDO::PARAM_STR);
 
         $consulta->execute();
@@ -493,7 +495,6 @@ class Pedido
     {
         $arrayProductos = self::ListarProductosSegunIdPedidoYPuesto($producto_pedido->id_pedido, $puesto);
         $retorno = false;
-       
         
         if(count($arrayProductos) > 0)
         {
@@ -602,6 +603,30 @@ class Pedido
         }
 
     }
+
+    public static function ListarProductos_Pedidos()
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
+        $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM productos_pedidos");
+
+        $consulta->execute();
+        
+        return $consulta->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public static function ListarPedidosEntreFechas($desde, $hasta)
+    {
+        $accesoADatos = AccesoADatos::RetornarAccesoADatos(); 
+        $consulta = $accesoADatos->PrepararConsulta("SELECT * FROM pedidos WHERE fecha >= :desde AND fecha <= :hasta");
+        
+        $consulta->bindValue(":desde", $desde, PDO::PARAM_STR);
+        $consulta->bindValue(":hasta", $hasta, PDO::PARAM_STR);
+
+        $consulta->execute();
+        
+        return $consulta->fetchAll(PDO::FETCH_CLASS, "Pedido");
+    }
+
 }
 
 ?>
