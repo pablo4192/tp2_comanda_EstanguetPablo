@@ -46,7 +46,6 @@ $app->addBodyParsingMiddleware();
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
 //REGISTRO-LISTAR PRODUCTOS    
 $app->group('/productos', function (RouteCollectorProxy $group){
     $group->get('[/]', \ProductoController::class . ':ListarProductos');
@@ -179,6 +178,19 @@ $app->group('/descarga/productos', function (RouteCollectorProxy $group){
 
 $app->group('/descarga/usuarios', function (RouteCollectorProxy $group){
     $group->get('[/]', \ArchivoController::class . ':DescargarDatos_Csv');
+});
+
+//DESCARGA DE DATOS BD A UN ARCHIVO PDF 
+$app->group('/descarga_pdf/pedidos', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ArchivoController::class . ':DescargarDatos_Pdf');
+});
+
+$app->group('/descarga_pdf/productos', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ArchivoController::class . ':DescargarDatos_Pdf');
+});
+
+$app->group('/descarga_pdf/usuarios', function (RouteCollectorProxy $group){
+    $group->get('[/]', \ArchivoController::class . ':DescargarDatos_Pdf');
 });
 
 

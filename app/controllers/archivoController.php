@@ -24,25 +24,58 @@ class ArchivoController
                     $rutaCsv = "productos.csv";
                     break;
                     case "/descarga/usuarios":
-                        $lista = Usuario::Listar();
+                        $lista = Usuario::Listar(); 
                         $rutaCsv = "usuarios.csv";
                         break;
         }
 
         $manejador = new ManejadorArchivos($rutaCsv);
 
-        if($manejador->DescargarEnCsv($lista))
+        if($manejador->Descargar($lista))
         {
-            //$payload = json_encode(array("Mensaje" => "Los datos fueron descargados en la carpeta: datos_descargados_csv"));
-            $response = $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            $response = $response->withStatus(200);
         }
         else
         {
-            //$payload = json_encode(array("Error" => "Hubo un problema al guardar en csv"));
             $response = $response->withStatus(500);
         }
-        //$response->getBody()->write($payload);
-        
+       
+        return $response;
+    }
+
+    public function DescargarDatos_Pdf($request, $response, $args)
+    {
+        $rutaConsulta = $request->getUri()->getPath();
+        $lista;
+        $rutaCsv;
+
+        switch($rutaConsulta)
+        {
+            case "/descarga_pdf/pedidos":
+                $lista = Pedido::Listar();
+                $rutaCsv = "pedidos.csv";
+                break;
+                case "/descarga_pdf/productos":
+                    $lista = Producto::Listar();
+                    $rutaCsv = "productos.csv";
+                    break;
+                    case "/descarga_pdf/usuarios":
+                        $lista = Usuario::Listar(); 
+                        $rutaCsv = "usuarios.csv";
+                        break;
+        }
+
+        $manejador = new ManejadorArchivos($rutaCsv);
+
+        if($manejador->Descargar($lista, true))
+        {
+            $response = $response->withStatus(200);
+        }
+        else
+        {
+            $response = $response->withStatus(500);
+        }
+       
         return $response;
     }
 
@@ -60,8 +93,6 @@ class ArchivoController
         $nombreArchivo = $files['archivo_csv']->getClientFilename();
         
         $files['archivo_csv']->moveTo("uploaded/".$nombreArchivo);
-
-        //Y si no concuerda las cabeceras y tipos de datos?? Valiidar!
 
         switch($rutaConsulta)
         {

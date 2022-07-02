@@ -1,14 +1,18 @@
 id;nombre;precio;stock;tipo;tiempo preparacion;ingresado por id
-1;milanesa;800;20;cocinero;10;1
-2;fideos;500;10;cocinero;10;1
-4;papas fritas;400;30;cocinero;15;1
-6;empanada;120;35;cocinero;8;1
-7;raviolesVerdura;900;18;cocinero;15;1
-8;patagoniaAmber;500;30;cervecero;2;1
-9;torta;600;56;repostero;25;1
-10;helado;600;20;repostero;10;1
-11;tiramisu;600;20;repostero;10;1
-12;tarta;800;20;cocinero;10;1
-13;vino;500;10;bartender;3;1
-14;fernet;700;30;bartender;5;1
-15;quilmes;120;35;cervecero;3;1
+1;milanesa;800;19;cocinero;10;38
+2;fideos;500;10;cocinero;10;40
+4;papas fritas;400;30;cocinero;15;40
+6;empanada;120;35;cocinero;8;39
+7;raviolesVerdura;900;45;cocinero;15;40
+8;patagoniaAmber;500;22;cervecero;2;38
+9;torta;600;56;repostero;25;38
+10;helado;600;18;repostero;10;38
+11;tiramisu;600;16;repostero;10;40
+12;tarta;800;18;cocinero;10;39
+13;vino;500;9;bartender;3;40
+14;fernet;700;29;bartender;5;38
+15;quilmes;120;32;cervecero;3;38
+29;milanesa a caballo;1000;46;cocinero;20;39
+30;hamburguesa garbanzo;900;42;cocinero;20;39
+31;corona;400;46;cervecero;3;39
+32;daikiri;600;46;bartender;3;39

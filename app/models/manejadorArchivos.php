@@ -4,6 +4,8 @@ require_once "mesa.php";
 require_once "producto.php";
 require_once "usuario.php";
 
+require('../fpdf/fpdf.php');
+
 class ManejadorArchivos
 {
     public $ruta;
@@ -13,7 +15,7 @@ class ManejadorArchivos
         $this->ruta = $ruta;
     }
 
-    public function DescargarEnCsv($listaADescargar)
+    public function Descargar($listaADescargar, $pdf=false)
     {
         $retorno;
         $archivo;
@@ -25,7 +27,7 @@ class ManejadorArchivos
 
         switch($this->ruta)
         {
-            case "pedidos.csv":
+            case "pedidos.csv": 
                 $this->ruta = "datos_descargados_csv/pedidos.csv";
                 
                 $archivo = fopen($this->ruta, "w");
@@ -36,9 +38,16 @@ class ManejadorArchivos
                     $retorno = fwrite($archivo, "$p->id;$p->nombre_cliente;$p->id_mozo;$p->id_mesa;$p->total;$p->fecha;$p->tiempo_estimado;$p->hora_ingreso;$p->hora_egreso;$p->estado;$p->medio_de_pago".PHP_EOL);
                 }
                 
-                header('Content-Type: application/csv');
-                header('Content-Disposition: attachment; filename=pedidos.csv');
-                readfile("./datos_descargados_csv/pedidos.csv");
+                if($pdf)
+                {
+                    $this->CsvToPdf();
+                }
+                else
+                {
+                    header('Content-Type: application/csv');
+                    header('Content-Disposition: attachment; filename=pedidos.csv');
+                    readfile("./datos_descargados_csv/pedidos.csv");
+                }
                 break;
                 case "productos.csv":
                     $this->ruta = "datos_descargados_csv/productos.csv";
@@ -50,9 +59,17 @@ class ManejadorArchivos
                     {
                         $retorno = fwrite($archivo, "$p->id;$p->nombre;$p->precio;$p->stock;$p->tipo;$p->tiempo_preparacion;$p->ingresado_por_id".PHP_EOL);
                     }
-                    header('Content-Type: application/csv');
-                    header('Content-Disposition: attachment; filename=productos.csv');
-                    readfile("./datos_descargados_csv/productos.csv");
+
+                    if($pdf)
+                    {
+                        $this->CsvToPdf();
+                    }
+                    else
+                    {
+                        header('Content-Type: application/csv');
+                        header('Content-Disposition: attachment; filename=productos.csv');
+                        readfile("./datos_descargados_csv/productos.csv");
+                    }
                     break;
                     case "usuarios.csv":
                         $this->ruta = "datos_descargados_csv/usuarios.csv";
@@ -64,9 +81,17 @@ class ManejadorArchivos
                         {
                             $retorno = fwrite($archivo, "$u->id;$u->nombre;$u->apellido;$u->clave;$u->puesto".PHP_EOL);
                         }
-                        header('Content-Type: application/csv');
-                        header('Content-Disposition: attachment; filename=usuarios.csv');
-                        readfile("./datos_descargados_csv/usuarios.csv");
+
+                        if($pdf)
+                        {
+                            $this->CsvToPdf();
+                        }
+                        else
+                        {
+                            header('Content-Type: application/csv');
+                            header('Content-Disposition: attachment; filename=usuarios.csv');
+                            readfile("./datos_descargados_csv/usuarios.csv");
+                        }
                         break;
         }
         fclose($archivo);
@@ -208,6 +233,62 @@ class ManejadorArchivos
                     
         return false;
 
+    }
+
+    private function CsvToPdf()
+    {
+        $archivo = fopen($this->ruta, "r");
+        $arrayData = [];
+        
+        while(!feof($archivo))
+        {
+            $renglon = fgets($archivo);
+            
+            if($renglon != "")
+            {
+                $dataRenglon = explode(";", $renglon);
+                array_push($arrayData, $dataRenglon);
+            }
+        }
+
+        $pdf = new FPDF();
+        $pdf->AddPage();
+        $anchoCelda;
+        
+        if($this->ruta == "datos_descargados_csv/pedidos.csv")
+        {
+            $pdf->SetFont('Times','',7);
+            $anchoCelda = 18;
+            $pdf->SetTitle('pedidos');
+        }
+        else if($this->ruta == "datos_descargados_csv/productos.csv")
+        {
+            $pdf->SetFont('Times','',8);
+            $anchoCelda = 27;
+            $pdf->SetTitle('productos');
+        }
+        else 
+        {
+            $pdf->SetFont('Times','',14);
+            $anchoCelda = 35;
+            $pdf->SetTitle('usuarios');
+        }
+
+
+        if(isset($arrayData))
+        {
+            foreach($arrayData as $fila)
+            {
+                foreach($fila as $celda)
+                {
+                    $pdf->Cell($anchoCelda, 7, $celda, 1, 0, 'C');
+                }
+                $pdf->Ln();
+            }
+
+            $pdf->Output('D');
+        }
+        
     }
 
 
